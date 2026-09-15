@@ -1,0 +1,733 @@
+/* =========================================================
+   BUY PAGE
+   ========================================================= */
+
+.buy-page {
+  min-height: 100vh;
+  background: #f5f8fc;
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.buy-header {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(14, 165, 233, 0.18), transparent 30%),
+    linear-gradient(135deg, #071a33 0%, #0b2d52 55%, #075985 100%);
+  color: #ffffff;
+}
+
+.buy-header::before {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  right: -120px;
+  top: -180px;
+}
+
+.buy-header::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgba(14, 165, 233, 0.18);
+  border-radius: 50%;
+  right: 80px;
+  bottom: -190px;
+}
+
+.buy-header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 90px 24px 115px;
+}
+
+.buy-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 8px 14px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.1);
+  color: #7dd3fc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.buy-header h1 {
+  max-width: 750px;
+  margin: 0;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.buy-header h1 span {
+  color: #38bdf8;
+}
+
+.buy-header p {
+  max-width: 600px;
+  margin: 22px 0 0;
+  color: #cbd5e1;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   SEARCH SECTION
+   ========================================================= */
+
+.buy-search-section {
+  position: relative;
+  z-index: 10;
+  max-width: 1250px;
+  margin: -55px auto 0;
+  padding: 0 24px;
+}
+
+.buy-search-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 72px;
+  padding: 10px 12px 10px 22px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+.buy-search-box > svg {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+.buy-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.buy-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.clear-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.clear-search:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 18px;
+  border: 1px solid #dbe4ee;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.filter-button:hover,
+.filter-button.active {
+  border-color: #0ea5e9;
+  background: #eff9ff;
+  color: #0284c7;
+}
+
+.search-button {
+  height: 48px;
+  padding: 0 25px;
+  border: 0;
+  border-radius: 11px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.search-button:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+}
+
+.filter-select {
+  flex: 1;
+  min-width: 150px;
+  height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dbe4ee;
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.clear-filters {
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: #0284c7;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.clear-filters:hover {
+  color: #0369a1;
+}
+
+
+/* =========================================================
+   LISTINGS
+   ========================================================= */
+
+.buy-listings {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 65px 24px 90px;
+}
+
+.buy-listings-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.section-label {
+  display: block;
+  margin-bottom: 9px;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+.buy-listings-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.buy-listings-header h2 span {
+  color: #0284c7;
+}
+
+.buy-listings-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.sort-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 180px;
+}
+
+.sort-button select {
+  width: 100%;
+  height: 44px;
+  padding: 0 38px 0 14px;
+  border: 1px solid #dbe4ee;
+  border-radius: 10px;
+  outline: none;
+  appearance: none;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sort-button select:focus {
+  border-color: #0ea5e9;
+}
+
+.sort-button svg {
+  position: absolute;
+  right: 13px;
+  pointer-events: none;
+  color: #64748b;
+}
+
+
+/* =========================================================
+   CAR GRID
+   ========================================================= */
+
+.buy-car-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.buy-car-card {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.buy-car-card:hover {
+  transform: translateY(-6px);
+  border-color: #bae6fd;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+
+/* =========================================================
+   CAR IMAGE
+   ========================================================= */
+
+.buy-car-image {
+  position: relative;
+  height: 235px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.buy-car-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+
+.buy-car-card:hover .buy-car-image img {
+  transform: scale(1.05);
+}
+
+.buy-car-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.buy-favorite {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: #475569;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(15, 23, 42, 0.12);
+  transition: 0.2s ease;
+}
+
+.buy-favorite:hover {
+  background: #ffffff;
+  color: #ef4444;
+  transform: scale(1.06);
+}
+
+
+/* =========================================================
+   CAR CONTENT
+   ========================================================= */
+
+.buy-car-content {
+  padding: 20px;
+}
+
+.buy-car-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 19px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.buy-car-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 9px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.buy-car-location svg {
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.buy-car-specs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+  padding: 13px 0;
+  border-top: 1px solid #eef2f7;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.buy-car-specs span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  color: #64748b;
+  font-size: 11px;
+  text-align: center;
+}
+
+.buy-car-specs svg {
+  flex-shrink: 0;
+  color: #0284c7;
+}
+
+.buy-car-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 17px;
+}
+
+.buy-car-bottom strong {
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.view-car-button {
+  height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.view-car-button:hover {
+  background: #0284c7;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   NO RESULTS
+   ========================================================= */
+
+.no-results {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 80px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.no-results-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #eff9ff;
+  color: #0284c7;
+}
+
+.no-results h3 {
+  margin: 20px 0 8px;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.no-results p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.reset-results-button {
+  margin-top: 20px;
+  height: 42px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 9px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reset-results-button:hover {
+  background: #0369a1;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .buy-car-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-row {
+    flex-wrap: wrap;
+  }
+
+  .filter-select {
+    flex: 1 1 calc(33.333% - 12px);
+  }
+
+  .clear-filters {
+    margin-left: auto;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .buy-header-content {
+    padding: 70px 20px 95px;
+  }
+
+  .buy-header h1 {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+
+  .buy-header p {
+    font-size: 15px;
+  }
+
+  .buy-search-section {
+    margin-top: -45px;
+    padding: 0 16px;
+  }
+
+  .buy-search-box {
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .buy-search-box > svg {
+    margin-left: 5px;
+  }
+
+  .buy-search-input {
+    width: calc(100% - 45px);
+    flex: 1;
+  }
+
+  .filter-button {
+    flex: 1;
+  }
+
+  .search-button {
+    flex: 1;
+  }
+
+  .filter-row {
+    display: none;
+  }
+
+  .filter-row.mobile-filter-open {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .clear-filters {
+    width: 100%;
+  }
+
+  .buy-listings {
+    padding: 50px 16px 70px;
+  }
+
+  .buy-listings-header {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 25px;
+  }
+
+  .sort-button {
+    width: 100%;
+  }
+
+  .buy-car-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .buy-car-image {
+    height: 245px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .buy-header-content {
+    padding: 60px 16px 85px;
+  }
+
+  .buy-header h1 {
+    font-size: 36px;
+  }
+
+  .buy-header p {
+    font-size: 14px;
+  }
+
+  .buy-search-box {
+    border-radius: 14px;
+  }
+
+  .filter-row.mobile-filter-open {
+    grid-template-columns: 1fr;
+  }
+
+  .buy-car-image {
+    height: 220px;
+  }
+
+  .buy-car-content {
+    padding: 17px;
+  }
+
+  .buy-car-title {
+    font-size: 18px;
+  }
+
+  .buy-car-specs span {
+    font-size: 10px;
+  }
+
+  .buy-car-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .buy-car-bottom strong {
+    font-size: 17px;
+  }
+
+  .view-car-button {
+    width: 100%;
+  }
+}

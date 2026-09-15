@@ -1,0 +1,12 @@
+{
+  "name": "car-rental",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend run dev -- --host",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview -- --host"
+  },
+  "dependencies": {
+    "lucide-react": "^1.45.0"
+  }
+}

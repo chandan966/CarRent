@@ -1,0 +1,285 @@
+.services-page {
+  min-height: 100vh;
+  background: #f5f8fc;
+  color: #0f172a;
+  padding: 40px 24px 80px;
+}
+
+.services-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Back Button */
+
+.services-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: #0284c7;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 28px;
+}
+
+.services-back-button:hover {
+  color: #0369a1;
+}
+
+/* Hero */
+
+.services-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 0.6fr;
+  gap: 40px;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 55px;
+  box-shadow: 0 15px 45px rgba(15, 23, 42, 0.08);
+}
+
+.services-eyebrow {
+  color: #0284c7;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.services-hero h1 {
+  margin: 14px 0 20px;
+  font-size: 52px;
+  line-height: 1.08;
+  font-weight: 850;
+  color: #0f172a;
+}
+
+.services-hero h1 span {
+  display: block;
+  color: #0284c7;
+}
+
+.services-hero p {
+  max-width: 650px;
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.services-hero-icon {
+  width: 230px;
+  height: 230px;
+  margin: auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+/* Section */
+
+.services-list-section {
+  padding: 90px 0 70px;
+}
+
+.services-section-heading {
+  text-align: center;
+  margin-bottom: 38px;
+}
+
+.services-section-heading span {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.services-section-heading h2 {
+  margin: 8px 0 0;
+  font-size: 32px;
+  font-weight: 850;
+}
+
+/* Grid */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.service-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 30px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  border-color: #bae6fd;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+}
+
+.service-card-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #e0f2fe;
+  color: #0284c7;
+  margin-bottom: 20px;
+}
+
+.service-card h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.service-card p {
+  min-height: 72px;
+  margin: 0 0 22px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.service-card-button {
+  border: none;
+  background: transparent;
+  color: #0284c7;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+}
+
+.service-card-button:hover {
+  color: #0369a1;
+}
+
+/* CTA */
+
+.services-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 42px;
+  border-radius: 22px;
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.services-cta h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.services-cta p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+.services-cta button {
+  min-height: 50px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #0284c7;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.services-cta button:hover {
+  transform: translateY(-2px);
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .services-hero {
+    grid-template-columns: 1fr;
+    padding: 40px;
+  }
+
+  .services-hero-icon {
+    width: 180px;
+    height: 180px;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .services-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .services-page {
+    padding: 25px 15px 50px;
+  }
+
+  .services-hero {
+    padding: 28px;
+    border-radius: 18px;
+  }
+
+  .services-hero h1 {
+    font-size: 35px;
+  }
+
+  .services-hero p {
+    font-size: 14px;
+  }
+
+  .services-hero-icon {
+    width: 140px;
+    height: 140px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-list-section {
+    padding: 65px 0 50px;
+  }
+
+  .services-section-heading h2 {
+    font-size: 27px;
+  }
+
+  .services-cta {
+    padding: 30px 24px;
+  }
+
+  .services-cta h2 {
+    font-size: 24px;
+  }
+
+  .services-cta button {
+    width: 100%;
+  }
+}

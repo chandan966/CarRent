@@ -1,0 +1,239 @@
+
+.booking-page {
+  min-height: 100vh;
+  background: #f5f8fc;
+  color: #0f172a;
+  padding: 40px 24px 80px;
+}
+
+.booking-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.booking-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: #0284c7;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 30px;
+}
+
+.booking-back-button:hover {
+  color: #0369a1;
+}
+
+.booking-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.booking-header span {
+  display: inline-block;
+  color: #0284c7;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  margin-bottom: 10px;
+}
+
+.booking-header h1 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.15;
+  font-weight: 850;
+  color: #0f172a;
+}
+
+.booking-header p {
+  margin: 12px auto 0;
+  max-width: 600px;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.booking-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.6fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.booking-form-section,
+.booking-summary-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+/* Booking form */
+
+.booking-form-section form {
+  width: 100%;
+}
+
+.booking-form-section h2,
+.booking-form-section h3 {
+  color: #0f172a;
+}
+
+.booking-form-section label {
+  color: #334155;
+  font-weight: 700;
+}
+
+.booking-form-section input,
+.booking-form-section select,
+.booking-form-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  margin-top: 7px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.booking-form-section input:focus,
+.booking-form-section select:focus,
+.booking-form-section textarea:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.booking-form-section textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* Summary */
+
+.booking-summary-section {
+  position: sticky;
+  top: 25px;
+}
+
+.booking-summary-section h2,
+.booking-summary-section h3 {
+  color: #0f172a;
+}
+
+.booking-summary-section p {
+  color: #64748b;
+}
+
+/* Buttons */
+
+.booking-form-section button,
+.booking-summary-section button {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.booking-form-section button[type="submit"] {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 11px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.booking-form-section button[type="submit"]:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}
+
+/* Not found */
+
+.booking-not-found {
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 50px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 15px 45px rgba(15, 23, 42, 0.08);
+}
+
+.booking-not-found h1 {
+  margin: 0 0 10px;
+  color: #0f172a;
+}
+
+.booking-not-found p {
+  color: #64748b;
+  margin-bottom: 25px;
+}
+
+.booking-not-found button {
+  border: none;
+  background: #0284c7;
+  color: #ffffff;
+  padding: 13px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.booking-not-found button:hover {
+  background: #0369a1;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-summary-section {
+    position: static;
+  }
+
+  .booking-header h1 {
+    font-size: 36px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .booking-page {
+    padding: 25px 15px 50px;
+  }
+
+  .booking-header {
+    margin-bottom: 28px;
+  }
+
+  .booking-header h1 {
+    font-size: 30px;
+  }
+
+  .booking-header p {
+    font-size: 14px;
+  }
+
+  .booking-form-section,
+  .booking-summary-section {
+    padding: 20px;
+    border-radius: 16px;
+  }
+}

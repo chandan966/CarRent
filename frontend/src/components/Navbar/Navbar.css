@@ -1,0 +1,740 @@
+/* ================================
+   PREMIUM NAVBAR
+================================ */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  width: 100%;
+
+  background: rgba(255, 255, 255, 0.88);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border-bottom: 1px solid rgba(14, 165, 233, 0.18);
+
+  box-shadow:
+    0 4px 20px rgba(15, 23, 42, 0.05);
+
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.navbar:hover {
+  border-bottom-color: rgba(14, 165, 233, 0.35);
+
+  box-shadow:
+    0 8px 30px rgba(14, 165, 233, 0.08);
+}
+
+
+/* ================================
+   NAVBAR INNER
+================================ */
+
+.navbar-inner {
+  max-width: 1400px;
+
+  min-height: 76px;
+
+  margin: 0 auto;
+
+  padding: 0 5%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+
+/* ================================
+   LOGO
+================================ */
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  flex-shrink: 0;
+
+  text-decoration: none;
+
+  color: #0f172a;
+
+  transition:
+    transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: translateY(-2px);
+}
+
+.navbar-logo-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid rgba(255, 255, 255, 0.7);
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #0ea5e9,
+    #0284c7
+  );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 22px rgba(14, 165, 233, 0.28);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.navbar-logo:hover .navbar-logo-icon {
+  transform:
+    rotate(-8deg)
+    scale(1.08);
+
+  box-shadow:
+    0 12px 30px rgba(14, 165, 233, 0.4);
+}
+
+.navbar-logo strong {
+  display: block;
+
+  font-size: 19px;
+
+  font-weight: 850;
+
+  letter-spacing: -0.7px;
+}
+
+.navbar-logo span {
+  display: block;
+
+  margin-top: 2px;
+
+  font-size: 9px;
+
+  font-weight: 600;
+
+  color: #94a3b8;
+
+  letter-spacing: 0.7px;
+}
+
+
+/* ================================
+   NAVIGATION LINKS
+================================ */
+
+.navbar-links {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 5px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 14px;
+
+  background: rgba(248, 250, 252, 0.75);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.navbar-links a {
+  position: relative;
+
+  padding: 10px 15px;
+
+  border-radius: 9px;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  color: #475569;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+/* Hover background */
+
+.navbar-links a:hover {
+  color: #0284c7;
+
+  background: #ffffff;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 15px rgba(15, 23, 42, 0.08);
+}
+
+
+/* Animated blue line */
+
+.navbar-links a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+
+  bottom: 4px;
+
+  width: 0;
+
+  height: 2px;
+
+  border-radius: 10px;
+
+  background: #0ea5e9;
+
+  transform: translateX(-50%);
+
+  transition:
+    width 0.3s ease;
+}
+
+.navbar-links a:hover::after {
+  width: 55%;
+}
+
+
+/* ================================
+   ACTION AREA
+================================ */
+
+.navbar-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+/* ================================
+   ICON BUTTONS
+================================ */
+
+.navbar-icon-button {
+  position: relative;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dbe4ee;
+
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  color: #475569;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* Blue glow layer */
+
+.navbar-icon-button::before {
+  content: "";
+
+  position: absolute;
+
+  width: 0;
+  height: 0;
+
+  border-radius: 50%;
+
+  background: rgba(14, 165, 233, 0.15);
+
+  transform: translate(-50%, -50%);
+
+  left: 50%;
+  top: 50%;
+
+  transition:
+    width 0.35s ease,
+    height 0.35s ease;
+}
+
+.navbar-icon-button:hover::before {
+  width: 90px;
+  height: 90px;
+}
+
+.navbar-icon-button svg {
+  position: relative;
+
+  z-index: 2;
+
+  transition:
+    transform 0.3s ease;
+}
+
+.navbar-icon-button:hover {
+  color: #0284c7;
+
+  border-color: #38bdf8;
+
+  background: #f0f9ff;
+
+  transform:
+    translateY(-3px)
+    scale(1.04);
+
+  box-shadow:
+    0 8px 22px rgba(14, 165, 233, 0.18);
+}
+
+.navbar-icon-button:hover svg {
+  transform:
+    scale(1.18)
+    rotate(-4deg);
+}
+
+.navbar-icon-button:active {
+  transform: scale(0.94);
+}
+
+
+/* ================================
+   NOTIFICATION DOT
+================================ */
+
+.notification-dot {
+  position: absolute;
+
+  top: 6px;
+  right: 6px;
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #ef4444;
+
+  border: 2px solid #ffffff;
+
+  z-index: 5;
+
+  animation:
+    notificationPulse 1.8s infinite;
+}
+
+@keyframes notificationPulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(239, 68, 68, 0.45);
+  }
+
+  70% {
+    box-shadow:
+      0 0 0 6px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+
+/* ================================
+   PROFILE BUTTON
+================================ */
+
+.navbar-profile {
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-left: 5px;
+
+  padding: 4px 13px 4px 5px;
+
+  border: 1px solid #dbe4ee;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  font-size: 13px;
+
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.navbar-profile:hover {
+  border-color: #38bdf8;
+
+  background: #f0f9ff;
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 8px 22px rgba(14, 165, 233, 0.15);
+}
+
+.navbar-profile:active {
+  transform: scale(0.96);
+}
+
+
+/* ================================
+   PROFILE AVATAR
+================================ */
+
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: linear-gradient(
+    135deg,
+    #e0f2fe,
+    #bae6fd
+  );
+
+  color: #0284c7;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.navbar-profile:hover .profile-avatar {
+  transform:
+    rotate(5deg)
+    scale(1.08);
+
+  box-shadow:
+    0 5px 14px rgba(14, 165, 233, 0.2);
+}
+
+
+/* ================================
+   MOBILE MENU
+================================ */
+
+.navbar-menu-button {
+  display: none;
+
+  width: 40px;
+  height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dbe4ee;
+
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.navbar-menu-button:hover {
+  color: #0284c7;
+
+  border-color: #38bdf8;
+
+  background: #f0f9ff;
+
+  transform: rotate(5deg) scale(1.05);
+}
+
+
+/* ================================
+   SEARCH PANEL
+================================ */
+
+.navbar-search {
+  border-top: 1px solid #e2e8f0;
+
+  padding: 14px 5%;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  animation:
+    searchOpen 0.3s ease;
+}
+
+@keyframes searchOpen {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+.navbar-search-box {
+  max-width: 650px;
+
+  height: 48px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 16px;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  color: #64748b;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.08);
+
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.navbar-search-box:focus-within {
+  border-color: #0ea5e9;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 0 4px rgba(14, 165, 233, 0.1),
+    0 12px 30px rgba(15, 23, 42, 0.1);
+}
+
+.navbar-search-box input {
+  width: 100%;
+
+  border: 0;
+
+  outline: 0;
+
+  background: transparent;
+
+  font-size: 14px;
+
+  color: #0f172a;
+}
+
+.navbar-search-box input::placeholder {
+  color: #94a3b8;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1050px) {
+  .navbar-links {
+    gap: 3px;
+  }
+
+  .navbar-links a {
+    padding: 10px 10px;
+  }
+
+  .navbar-profile span {
+    display: none;
+  }
+
+  .navbar-profile {
+    padding-right: 5px;
+  }
+}
+
+
+@media (max-width: 850px) {
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-menu-button {
+    display: flex;
+  }
+
+  .navbar-links.active {
+    position: absolute;
+
+    top: 76px;
+
+    left: 4%;
+    right: 4%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 4px;
+
+    padding: 10px;
+
+    border: 1px solid #dbe4ee;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.98);
+
+    box-shadow:
+      0 20px 45px rgba(15, 23, 42, 0.12);
+
+    animation:
+      mobileMenu 0.3s ease;
+  }
+
+  @keyframes mobileMenu {
+    from {
+      opacity: 0;
+
+      transform:
+        translateY(-15px)
+        scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+
+      transform:
+        translateY(0)
+        scale(1);
+    }
+  }
+
+  .navbar-links.active a {
+    width: auto;
+
+    padding: 13px 15px;
+
+    border-radius: 9px;
+  }
+
+  .navbar-links.active a:hover {
+    padding-left: 20px;
+
+    background: #f0f9ff;
+  }
+
+  .navbar-links.active a::after {
+    display: none;
+  }
+}
+
+
+@media (max-width: 560px) {
+  .navbar-inner {
+    min-height: 68px;
+
+    padding: 0 18px;
+  }
+
+  .navbar-logo span {
+    display: none;
+  }
+
+  .navbar-logo strong {
+    font-size: 17px;
+  }
+
+  .navbar-icon-button:nth-child(2),
+  .navbar-icon-button:nth-child(3) {
+    display: none;
+  }
+
+  .navbar-search {
+    padding: 12px 18px;
+  }
+
+  .navbar-links.active {
+    top: 68px;
+
+    left: 18px;
+    right: 18px;
+  }
+}
