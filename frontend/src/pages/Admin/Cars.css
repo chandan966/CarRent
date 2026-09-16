@@ -1,0 +1,396 @@
+.admin-cars-page {
+  min-height: 100vh;
+  padding: 40px;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+
+/* HEADER */
+
+.admin-cars-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.admin-cars-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #0284c7;
+}
+
+.admin-cars-header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.admin-cars-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+
+/* ADD BUTTON */
+
+.admin-add-car-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #0284c7;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-add-car-btn:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}
+
+
+/* STATISTICS */
+
+.admin-cars-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.admin-car-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.admin-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.admin-car-stat-card span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.admin-car-stat-card strong {
+  font-size: 24px;
+}
+
+
+/* TOOLBAR */
+
+.admin-cars-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.admin-car-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #64748b;
+}
+
+.admin-car-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.admin-car-search input::placeholder {
+  color: #94a3b8;
+}
+
+.admin-car-filter {
+  min-width: 160px;
+  padding: 11px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  outline: none;
+  background: white;
+  color: #334155;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+
+/* TABLE CARD */
+
+.admin-cars-table-card {
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+
+.admin-table-heading {
+  padding: 22px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-table-heading h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.admin-table-heading p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+
+/* TABLE */
+
+.admin-cars-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-cars-table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+}
+
+.admin-cars-table th {
+  padding: 15px 20px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-cars-table td {
+  padding: 17px 20px;
+  border-top: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 14px;
+}
+
+.admin-cars-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.admin-cars-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+
+/* CAR */
+
+.admin-car-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-car-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.admin-car-name strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #0f172a;
+}
+
+.admin-car-name span {
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+
+/* TYPE */
+
+.admin-car-type {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* PRICE */
+
+.admin-car-price {
+  color: #0f172a;
+}
+
+
+/* STATUS */
+
+.admin-car-status {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-car-status.available {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-car-status.rented {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.admin-car-status.sold {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+
+/* ACTIONS */
+
+.admin-car-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-car-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-action-edit {
+  color: #0284c7;
+}
+
+.admin-action-edit:hover {
+  background: #e0f2fe;
+  border-color: #bae6fd;
+}
+
+.admin-action-delete {
+  color: #ef4444;
+}
+
+.admin-action-delete:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+
+/* EMPTY */
+
+.admin-no-cars {
+  padding: 50px !important;
+  text-align: center;
+  color: #64748b !important;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+  .admin-cars-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-cars-page {
+    padding: 24px 16px;
+  }
+
+  .admin-cars-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-cars-header h1 {
+    font-size: 27px;
+  }
+
+  .admin-add-car-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-cars-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-car-search {
+    max-width: none;
+  }
+
+  .admin-car-filter {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .admin-cars-stats {
+    grid-template-columns: 1fr;
+  }
+}

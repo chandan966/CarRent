@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // Auth
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
-import ForgotPassword from "./pages/Auth/ForgotPassword.jsx";
+import ForgotPassword from "./pages/Auth/ForgotPassword.jsx.jsx";
 
 // Home
 import Home from "./pages/Home/Home";
@@ -16,7 +16,10 @@ import BuyDetails from "./pages/buy/BuyDetails";
 import Rent from "./pages/Rent/Rent";
 
 // Sell
-import Sell from "./pages/Sell/Selll";
+import Sell from "./pages/Sell/Sell";
+
+// Cars - Public
+import Cars from "./pages/Cars/Cars";
 
 // Services
 import Services from "./pages/Services/Services";
@@ -24,6 +27,9 @@ import ServiceDetails from "./pages/Services/ServiceDetails";
 
 // Booking
 import Booking from "./pages/Booking/Booking";
+
+// Notifications
+import Notifications from "./pages/Notifications/Notification";
 
 // Profile
 import Profile from "./pages/Profile/Profile";
@@ -34,12 +40,19 @@ import MyRentals from "./pages/Profile/MyRental";
 // Route Protection
 import ProtectedRoute from "./routes/ProtectedRoute";
 
+// Admin
+import AdminCars from "./pages/Admin/Cars";
+
+
 function App() {
   return (
     <BrowserRouter>
+
       <Routes>
 
-        {/* AUTH */}
+        {/* ================================
+            AUTH
+        ================================= */}
 
         <Route
           path="/login"
@@ -57,7 +70,9 @@ function App() {
         />
 
 
-        {/* HOME */}
+        {/* ================================
+            HOME
+        ================================= */}
 
         <Route
           path="/"
@@ -69,7 +84,9 @@ function App() {
         />
 
 
-        {/* BUY */}
+        {/* ================================
+            BUY
+        ================================= */}
 
         <Route
           path="/buy"
@@ -90,7 +107,9 @@ function App() {
         />
 
 
-        {/* RENT */}
+        {/* ================================
+            RENT
+        ================================= */}
 
         <Route
           path="/rent"
@@ -102,7 +121,9 @@ function App() {
         />
 
 
-        {/* SELL */}
+        {/* ================================
+            SELL
+        ================================= */}
 
         <Route
           path="/sell"
@@ -114,7 +135,19 @@ function App() {
         />
 
 
-        {/* SERVICES */}
+        {/* ================================
+            CARS
+        ================================= */}
+
+        <Route
+          path="/cars"
+          element={<Cars />}
+        />
+
+
+        {/* ================================
+            SERVICES
+        ================================= */}
 
         <Route
           path="/services"
@@ -135,7 +168,9 @@ function App() {
         />
 
 
-        {/* BOOKING */}
+        {/* ================================
+            BOOKING
+        ================================= */}
 
         <Route
           path="/booking"
@@ -147,7 +182,23 @@ function App() {
         />
 
 
-        {/* PROFILE */}
+        {/* ================================
+            NOTIFICATIONS
+        ================================= */}
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
+
+
+        {/* ================================
+            PROFILE
+        ================================= */}
 
         <Route
           path="/profile"
@@ -186,18 +237,39 @@ function App() {
         />
 
 
-        {/* UNKNOWN ROUTES */}
+        {/* ================================
+            ADMIN
+        ================================= */}
+
+        <Route
+          path="/admin/cars"
+          element={<AdminCars />}
+        />
+
+
+        {/* ================================
+            UNKNOWN ROUTES
+        ================================= */}
 
         <Route
           path="*"
-          element={<Navigate to="/login" replace />}
+          element={
+            <Navigate
+              to="/login"
+              replace
+            />
+          }
         />
 
       </Routes>
 
+
+      {/* DEVELOPER CREDIT */}
+
       <div className="developer-credit">
         Developer Chandan Ghanghav
       </div>
+
     </BrowserRouter>
   );
 }
