@@ -11,7 +11,7 @@ import {
   Calendar,
 } from "lucide-react";
 
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../components/Navbar/Navbar";
 import "./BuyDetails.css";
 
 const cars = [

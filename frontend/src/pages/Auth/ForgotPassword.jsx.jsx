@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail, Send, Car } from "lucide-react";
-import "./ForgotPassword.css";
+import "./Forgotpassword.css";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");

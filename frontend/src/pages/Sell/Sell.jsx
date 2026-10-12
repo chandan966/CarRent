@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react";
 
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../components/Navbar/Navbar";
 import "./Sell.css";
 
 function Sell() {

@@ -9,7 +9,7 @@ import ForgotPassword from "./pages/Auth/ForgotPassword";
 import Home from "./pages/Home/Home";
 
 // Buy
-import Buy from "./pages/buy/Buy";
+import Buy from "./pages/buy/buy";
 import BuyDetails from "./pages/buy/BuyDetails";
 
 // Rent

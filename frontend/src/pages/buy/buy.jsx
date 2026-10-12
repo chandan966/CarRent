@@ -1,4 +1,4 @@
-import "./Buy.css";
+import "./buy.css";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,8 +12,7 @@ import {
   X,
 } from "lucide-react";
 
-import Navbar from "../../components/navbar/Navbar";
-import "./Buy.css";
+import Navbar from "../../components/Navbar/Navbar";
 
 const cars = [
   {

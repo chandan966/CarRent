@@ -2,7 +2,7 @@ import './Booking.css';
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../components/Navbar/Navbar";
 import BookingForm from "../../components/booking/BookingForm";
 import BookingSummary from "../../components/booking/BookingSummary";
 
