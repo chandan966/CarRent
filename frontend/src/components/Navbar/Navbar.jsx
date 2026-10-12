@@ -4,24 +4,35 @@ import {
   Heart,
   Bell,
   User,
+  ArrowLeft,
   CarFront,
   Menu,
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/");
+  };
+
+  const handleNavClick = () => {
+    setMenuOpen(false);
+    setSearchOpen(false);
   };
 
   return (
@@ -29,6 +40,15 @@ const Navbar = () => {
       <div className="navbar-inner">
 
         {/* LOGO */}
+        <button
+          className="navbar-back-button"
+          onClick={handleBack}
+          aria-label="Go back"
+          title="Go back"
+        >
+          <ArrowLeft size={19} />
+        </button>
+
         <Link to="/" className="navbar-logo">
           <div className="navbar-logo-icon">
             <CarFront size={21} />
@@ -42,12 +62,15 @@ const Navbar = () => {
 
         {/* DESKTOP NAVIGATION */}
         <nav className={`navbar-links ${menuOpen ? "active" : ""}`}>
-          <Link to="/">Home</Link>
-          <Link to="/buy">Buy</Link>
-          <Link to="/rent">Rent</Link>
-          <Link to="/sell">Sell</Link>
-          <Link to="/services">Services</Link>
-          <Link to="/cars">Cars</Link>
+          <Link to="/" onClick={handleNavClick}>Home</Link>
+          <Link to="/buy" onClick={handleNavClick}>Buy</Link>
+          <Link to="/rent" onClick={handleNavClick}>Rent</Link>
+          <Link to="/sell" onClick={handleNavClick}>Sell</Link>
+          <Link to="/services" onClick={handleNavClick}>Services</Link>
+          <Link to="/cars" onClick={handleNavClick}>Cars</Link>
+          {isAdmin && (
+            <Link to="/admin/cars" onClick={handleNavClick}>Admin</Link>
+          )}
         </nav>
 
         {/* ACTIONS */}

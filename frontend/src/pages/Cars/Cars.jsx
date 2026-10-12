@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Search,
   Heart,
@@ -106,24 +106,21 @@ const carsData = [
 
 const Cars = () => {
   const [search, setSearch] = useState("");
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState(() => {
+    if (typeof window === "undefined") return [];
 
-  // Load saved favorites
-  useEffect(() => {
     const savedFavorites = localStorage.getItem("favoriteCars");
 
-    if (savedFavorites) {
-      try {
-        const parsedFavorites = JSON.parse(savedFavorites);
+    if (!savedFavorites) return [];
 
-        const favoriteIds = parsedFavorites.map((car) => car.id);
-
-        setFavorites(favoriteIds);
-      } catch (error) {
-        console.error("Error loading favorites:", error);
-      }
+    try {
+      const parsedFavorites = JSON.parse(savedFavorites);
+      return parsedFavorites.map((car) => car.id);
+    } catch (error) {
+      console.error("Error loading favorites:", error);
+      return [];
     }
-  }, []);
+  });
 
   // Add/remove favorite
   const toggleFavorite = (car) => {

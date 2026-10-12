@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -74,13 +74,29 @@ const Login = () => {
 
     setIsLoading(true);
 
-    // Temporary login until backend authentication is connected
     setTimeout(() => {
-      login({
-        email: formData.email,
-      });
+      const normalizedEmail = formData.email.trim().toLowerCase();
+      const isAdminLogin =
+        normalizedEmail === "admin@car-rental.com" &&
+        formData.password === "admin123";
 
+      const userData = {
+        email: normalizedEmail,
+        fullName: isAdminLogin
+          ? "CarRent Admin"
+          : formData.email.split("@")[0] || "CarRent User",
+        phone: isAdminLogin ? "9999999999" : "",
+        role: isAdminLogin ? "admin" : "user",
+      };
+
+      login(userData);
       setIsLoading(false);
+
+      if (isAdminLogin) {
+        navigate("/admin/cars");
+        return;
+      }
+
       navigate("/");
     }, 700);
   };

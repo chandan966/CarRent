@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "../../components/navbar/Navbar";
-
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="home-page">
       <Navbar />
@@ -24,8 +26,13 @@ const Home = () => {
           </p>
 
           <div className="home-actions">
-            <button>Explore Cars</button>
-            <button>Rent a Car</button>
+            <button onClick={() => navigate("/cars")}>
+              Explore Cars
+            </button>
+
+            <button onClick={() => navigate("/rent")}>
+              Rent a Car
+            </button>
           </div>
         </div>
       </section>
@@ -63,7 +70,10 @@ const Home = () => {
             </p>
           </div>
 
-          <button className="view-all-cars">
+          <button
+            className="view-all-cars"
+            onClick={() => navigate("/cars")}
+          >
             View All Cars →
           </button>
         </div>
@@ -108,7 +118,10 @@ const Home = () => {
                 <span>● Available</span>
               </div>
 
-              <button className="car-details-button">
+              <button
+                className="car-details-button"
+                onClick={() => navigate("/buy/1")}
+              >
                 View Details →
               </button>
             </div>
@@ -152,7 +165,10 @@ const Home = () => {
                 <span>● Available</span>
               </div>
 
-              <button className="car-details-button">
+              <button
+                className="car-details-button"
+                onClick={() => navigate("/buy/2")}
+              >
                 View Details →
               </button>
             </div>
@@ -196,7 +212,10 @@ const Home = () => {
                 <span>● Available</span>
               </div>
 
-              <button className="car-details-button">
+              <button
+                className="car-details-button"
+                onClick={() => navigate("/buy/3")}
+              >
                 View Details →
               </button>
             </div>

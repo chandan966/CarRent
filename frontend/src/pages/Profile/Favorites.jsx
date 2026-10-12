@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -17,35 +17,31 @@ import "./Favorites.css";
 function Favorites() {
   const navigate = useNavigate();
 
-  const [cars, setCars] = useState([]);
+  const [cars, setCars] = useState(() => {
+    if (typeof window === "undefined") return [];
 
-  // Load favorites from localStorage
-  useEffect(() => {
     const savedFavorites = localStorage.getItem("favoriteCars");
 
-    if (savedFavorites) {
-      try {
-        const parsedFavorites = JSON.parse(savedFavorites);
+    if (!savedFavorites) return [];
 
-        // Remove duplicate cars by ID
-        const uniqueFavorites = parsedFavorites.filter(
-          (car, index, self) =>
-            index === self.findIndex((item) => item.id === car.id)
-        );
+    try {
+      const parsedFavorites = JSON.parse(savedFavorites);
+      const uniqueFavorites = parsedFavorites.filter(
+        (car, index, self) =>
+          index === self.findIndex((item) => item.id === car.id)
+      );
 
-        setCars(uniqueFavorites);
+      localStorage.setItem(
+        "favoriteCars",
+        JSON.stringify(uniqueFavorites)
+      );
 
-        // Save cleaned list back
-        localStorage.setItem(
-          "favoriteCars",
-          JSON.stringify(uniqueFavorites)
-        );
-      } catch (error) {
-        console.error("Error loading favorites:", error);
-        setCars([]);
-      }
+      return uniqueFavorites;
+    } catch (error) {
+      console.error("Error loading favorites:", error);
+      return [];
     }
-  }, []);
+  });
 
   const removeFavorite = (id) => {
     setCars((previousCars) => {

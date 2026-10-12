@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // Auth
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
-import ForgotPassword from "./pages/Auth/ForgotPassword.jsx.jsx";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
 
 // Home
 import Home from "./pages/Home/Home";
@@ -14,6 +14,7 @@ import BuyDetails from "./pages/buy/BuyDetails";
 
 // Rent
 import Rent from "./pages/Rent/Rent";
+import RentDetail from "./pages/Rent/RentDetails";
 
 // Sell
 import Sell from "./pages/Sell/Sell";
@@ -39,15 +40,18 @@ import MyRentals from "./pages/Profile/MyRental";
 
 // Route Protection
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AdmiRoute from "./routes/AdmiRoute";
 
 // Admin
+import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminCars from "./pages/Admin/Cars";
-
+import AdminBookings from "./pages/Admin/Booking";
+import AdminUsers from "./pages/Admin/Users";
+import AdminPayments from "./pages/Admin/Payments";
 
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
         {/* ================================
@@ -118,6 +122,12 @@ function App() {
               <Rent />
             </ProtectedRoute>
           }
+        />
+
+        {/* Rent Car Details - Public */}
+        <Route
+          path="/car/:id"
+          element={<RentDetail />}
         />
 
 
@@ -242,8 +252,57 @@ function App() {
         ================================= */}
 
         <Route
+          path="/admin"
+          element={
+            <AdmiRoute>
+              <AdminDashboard />
+            </AdmiRoute>
+          }
+        />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdmiRoute>
+              <AdminDashboard />
+            </AdmiRoute>
+          }
+        />
+
+        <Route
           path="/admin/cars"
-          element={<AdminCars />}
+          element={
+            <AdmiRoute>
+              <AdminCars />
+            </AdmiRoute>
+          }
+        />
+
+        <Route
+          path="/admin/bookings"
+          element={
+            <AdmiRoute>
+              <AdminBookings />
+            </AdmiRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <AdmiRoute>
+              <AdminUsers />
+            </AdmiRoute>
+          }
+        />
+
+        <Route
+          path="/admin/payments"
+          element={
+            <AdmiRoute>
+              <AdminPayments />
+            </AdmiRoute>
+          }
         />
 
 

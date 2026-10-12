@@ -19,7 +19,7 @@ import {
   CarFront,
 } from "lucide-react";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import Navbar from "../../components/navbar/Navbar";
 
 import "./Profile.css";

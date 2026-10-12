@@ -1,33 +1,40 @@
-import { createContext, useContext, useState } from "react";
-
-const AuthContext = createContext();
+import { useState } from "react";
+import { AuthContext } from "./authContext";
+import { getStoredUser, resolveRole } from "./authHelpers";
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+  const [user, setUser] = useState(() => getStoredUser());
 
   const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+    const normalizedUser = {
+      ...userData,
+      role: resolveRole(userData),
+    };
+
+    localStorage.setItem("user", JSON.stringify(normalizedUser));
     localStorage.setItem("isLoggedIn", "true");
 
-    setUser(userData);
+    setUser(normalizedUser);
   };
 
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("profileImage");
 
     setUser(null);
   };
 
   const signup = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+    const normalizedUser = {
+      ...userData,
+      role: resolveRole(userData),
+    };
+
+    localStorage.setItem("user", JSON.stringify(normalizedUser));
     localStorage.setItem("isLoggedIn", "true");
 
-    setUser(userData);
+    setUser(normalizedUser);
   };
 
   return (
@@ -38,13 +45,10 @@ export function AuthProvider({ children }) {
         signup,
         logout,
         isAuthenticated: !!user,
+        isAdmin: user?.role === "admin",
       }}
     >
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
 }

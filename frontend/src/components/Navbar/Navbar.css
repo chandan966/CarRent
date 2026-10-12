@@ -738,3 +738,34 @@
     right: 18px;
   }
 }
+
+.navbar-back-button {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid #dbe4ee;
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.navbar-back-button:hover {
+  color: #0284c7;
+  border-color: #38bdf8;
+  background: #f0f9ff;
+  transform: translateX(-2px);
+}

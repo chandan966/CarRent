@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -119,28 +119,21 @@ function BuyDetails() {
 
   const car = cars.find((item) => item.id === Number(id));
 
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    if (!car) return;
+  const [isFavorite, setIsFavorite] = useState(() => {
+    if (!car) return false;
 
     const savedFavorites = localStorage.getItem("favoriteCars");
 
-    if (savedFavorites) {
-      try {
-        const favorites = JSON.parse(savedFavorites);
+    if (!savedFavorites) return false;
 
-        const alreadyFavorite = favorites.some(
-          (favorite) => favorite.id === car.id
-        );
-
-        setIsFavorite(alreadyFavorite);
-      } catch (error) {
-        console.error("Error reading favorites:", error);
-        setIsFavorite(false);
-      }
+    try {
+      const favorites = JSON.parse(savedFavorites);
+      return favorites.some((favorite) => favorite.id === car.id);
+    } catch (error) {
+      console.error("Error reading favorites:", error);
+      return false;
     }
-  }, [car]);
+  });
 
   const toggleFavorite = () => {
     if (!car) return;

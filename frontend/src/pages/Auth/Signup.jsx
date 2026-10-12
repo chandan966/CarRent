@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -108,6 +108,7 @@ const Signup = () => {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
+        role: "user",
       };
 
       signup(userData);
