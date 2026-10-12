@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../context/useAuth";
+import { storeUser } from "../../context/authHelpers";
 import Navbar from "../../components/Navbar/Navbar";
 
 import "./Profile.css";
@@ -81,7 +82,7 @@ function Profile() {
       location: profileData.location,
     };
 
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+    storeUser(updatedUser);
 
     setIsEditing(false);
 

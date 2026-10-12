@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { AuthContext } from "./authContext";
-import { getStoredUser, resolveRole } from "./authHelpers";
+import {
+  getStoredUser,
+  removeStoredUser,
+  resolveRole,
+  storeUser,
+} from "./authHelpers";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getStoredUser());
@@ -11,15 +16,13 @@ export function AuthProvider({ children }) {
       role: resolveRole(userData),
     };
 
-    localStorage.setItem("user", JSON.stringify(normalizedUser));
-    localStorage.setItem("isLoggedIn", "true");
+    storeUser(normalizedUser);
 
     setUser(normalizedUser);
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("isLoggedIn");
+    removeStoredUser();
     localStorage.removeItem("profileImage");
 
     setUser(null);
@@ -31,8 +34,7 @@ export function AuthProvider({ children }) {
       role: resolveRole(userData),
     };
 
-    localStorage.setItem("user", JSON.stringify(normalizedUser));
-    localStorage.setItem("isLoggedIn", "true");
+    storeUser(normalizedUser);
 
     setUser(normalizedUser);
   };
