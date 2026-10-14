@@ -362,6 +362,10 @@
   transform: scale(1.08);
 }
 
+.favorite-button.active {
+  color: #ef4444;
+}
+
 .car-info {
   padding: 20px;
 }

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -11,52 +10,13 @@ import {
 } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
+import { useFavorites } from "../../hooks/useFavorites";
 
 import "./Favorites.css";
 
 function Favorites() {
   const navigate = useNavigate();
-
-  const [cars, setCars] = useState(() => {
-    if (typeof window === "undefined") return [];
-
-    const savedFavorites = localStorage.getItem("favoriteCars");
-
-    if (!savedFavorites) return [];
-
-    try {
-      const parsedFavorites = JSON.parse(savedFavorites);
-      const uniqueFavorites = parsedFavorites.filter(
-        (car, index, self) =>
-          index === self.findIndex((item) => item.id === car.id)
-      );
-
-      localStorage.setItem(
-        "favoriteCars",
-        JSON.stringify(uniqueFavorites)
-      );
-
-      return uniqueFavorites;
-    } catch (error) {
-      console.error("Error loading favorites:", error);
-      return [];
-    }
-  });
-
-  const removeFavorite = (id) => {
-    setCars((previousCars) => {
-      const updatedCars = previousCars.filter(
-        (car) => car.id !== id
-      );
-
-      localStorage.setItem(
-        "favoriteCars",
-        JSON.stringify(updatedCars)
-      );
-
-      return updatedCars;
-    });
-  };
+  const { favorites: cars, removeFavorite } = useFavorites();
 
   return (
     <>
@@ -133,7 +93,7 @@ function Favorites() {
               {cars.map((car, index) => (
                 <article
                   className="favorite-car-card"
-                  key={car.id}
+                  key={car.favoriteKey}
                   style={{
                     animationDelay: `${index * 0.1}s`,
                   }}
@@ -153,7 +113,7 @@ function Favorites() {
 
                     <button
                       className="favorite-remove-button"
-                      onClick={() => removeFavorite(car.id)}
+                      onClick={() => removeFavorite(car)}
                       aria-label={`Remove ${car.name} from favorites`}
                       title="Remove from favorites"
                     >
@@ -210,7 +170,15 @@ function Favorites() {
 
                       <button
                         className="favorite-view-button"
-                        onClick={() => navigate(`/buy/${car.id}`)}
+                        onClick={() =>
+                          navigate(
+                            car.category === "rent"
+                              ? `/car/${car.id}?type=rent`
+                              : car.detailRoute
+                                ? `${car.detailRoute}/${car.id}`
+                              : `/buy/${car.id}`
+                          )
+                        }
                       >
                         View Details
                         <ChevronRight size={17} />

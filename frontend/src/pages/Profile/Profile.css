@@ -249,7 +249,9 @@
 }
 
 .profile-stat-card {
+  width: 100%;
   min-width: 0;
+  min-height: 90px;
   display: flex;
   align-items: center;
   gap: 13px;
@@ -258,6 +260,10 @@
   border: 1px solid #e2e8f0;
   border-radius: 18px;
   background: white;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: inherit;
+  appearance: none;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   cursor: pointer;
   transition: 0.3s ease;
@@ -268,6 +274,15 @@
   transform: translateY(-5px);
   border-color: #bae6fd;
   box-shadow: 0 18px 35px rgba(15, 23, 42, 0.09);
+}
+
+.profile-stat-card:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.profile-stat-card:focus-visible {
+  outline: 3px solid rgba(14, 165, 233, 0.35);
+  outline-offset: 3px;
 }
 
 .profile-stat-card > div:nth-child(2) {
@@ -299,6 +314,11 @@
   align-items: center;
   justify-content: center;
   border-radius: 13px;
+  transition: transform 0.25s ease;
+}
+
+.profile-stat-card:hover .profile-stat-icon {
+  transform: scale(1.07);
 }
 
 .profile-stat-icon.favorite {
@@ -781,4 +801,62 @@
   .profile-status-badge {
     margin-left: 0;
   }
+}
+
+/* Category colors make these three account shortcuts easy to tell apart. */
+.profile-stat-card--purchase {
+  border-color: #bae6fd;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+}
+
+.profile-stat-card--purchase:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 18px 35px rgba(2, 132, 199, 0.16);
+}
+
+.profile-stat-card--purchase strong,
+.profile-stat-card--purchase > svg {
+  color: #0369a1;
+}
+
+.profile-stat-card--rental {
+  border-color: #ddd6fe;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+}
+
+.profile-stat-card--rental:hover {
+  border-color: #a78bfa;
+  box-shadow: 0 18px 35px rgba(124, 58, 237, 0.15);
+}
+
+.profile-stat-card--rental strong,
+.profile-stat-card--rental > svg {
+  color: #6d28d9;
+}
+
+.profile-stat-card--booking {
+  border-color: #a7f3d0;
+  background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+}
+
+.profile-stat-card--booking:hover {
+  border-color: #34d399;
+  box-shadow: 0 18px 35px rgba(5, 150, 105, 0.15);
+}
+
+.profile-stat-card--booking strong,
+.profile-stat-card--booking > svg {
+  color: #047857;
+}
+
+.profile-stat-card--purchase:focus-visible {
+  outline-color: rgba(2, 132, 199, 0.45);
+}
+
+.profile-stat-card--rental:focus-visible {
+  outline-color: rgba(124, 58, 237, 0.4);
+}
+
+.profile-stat-card--booking:focus-visible {
+  outline-color: rgba(5, 150, 105, 0.4);
 }

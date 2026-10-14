@@ -1,0 +1,166 @@
+.seller-modal-overlay {
+position: fixed;
+inset: 0;
+z-index: 9999;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+background: rgba(0, 0, 0, 0.65);
+backdrop-filter: blur(5px);
+}
+
+.seller-modal {
+position: relative;
+width: 100%;
+max-width: 430px;
+padding: 30px;
+border-radius: 20px;
+background: #fff;
+color: #172033;
+box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+animation: sellerModalIn 0.25s ease-out;
+}
+
+.seller-modal-close {
+position: absolute;
+top: 12px;
+right: 16px;
+border: none;
+background: transparent;
+font-size: 30px;
+cursor: pointer;
+color: #64748b;
+}
+
+.seller-modal-icon {
+display: grid;
+place-items: center;
+width: 65px;
+height: 65px;
+margin: 0 auto 15px;
+border-radius: 50%;
+background: #e0f2fe;
+font-size: 30px;
+}
+
+.seller-modal h2 {
+margin: 0 0 8px;
+text-align: center;
+font-size: 26px;
+}
+
+.seller-modal-subtitle {
+margin-bottom: 22px;
+color: #64748b;
+text-align: center;
+font-size: 14px;
+}
+
+.seller-car-details {
+margin-bottom: 20px;
+padding: 16px;
+border-radius: 12px;
+background: #f1f5f9;
+}
+
+.seller-car-details h3 {
+margin: 0 0 10px;
+font-size: 18px;
+}
+
+.seller-car-details p {
+margin: 6px 0;
+color: #475569;
+font-size: 14px;
+}
+
+.seller-phone {
+margin: 15px 0;
+text-align: center;
+font-size: 20px;
+font-weight: 700;
+}
+
+.seller-contact-actions {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+
+.seller-call-btn,
+.seller-whatsapp-btn {
+display: flex;
+align-items: center;
+justify-content: center;
+min-height: 46px;
+padding: 10px;
+border-radius: 9px;
+color: #fff;
+text-decoration: none;
+text-align: center;
+font-size: 14px;
+font-weight: 600;
+transition: transform 0.2s, opacity 0.2s;
+}
+
+.seller-call-btn {
+background: #0284c7;
+}
+
+.seller-whatsapp-btn {
+background: #16a34a;
+}
+
+.seller-call-btn:hover,
+.seller-whatsapp-btn:hover {
+transform: translateY(-2px);
+opacity: 0.9;
+}
+
+.seller-no-phone {
+padding: 12px;
+border-radius: 8px;
+background: #fff7ed;
+color: #9a3412;
+font-size: 14px;
+text-align: center;
+}
+
+.seller-done-btn {
+width: 100%;
+margin-top: 18px;
+padding: 12px;
+border: 1px solid #cbd5e1;
+border-radius: 9px;
+background: #fff;
+color: #334155;
+font-weight: 600;
+cursor: pointer;
+}
+
+.seller-done-btn:hover {
+background: #f1f5f9;
+}
+
+@keyframes sellerModalIn {
+from {
+opacity: 0;
+transform: translateY(15px) scale(0.97);
+}
+
+to {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+}
+
+@media (max-width: 420px) {
+.seller-modal {
+padding: 24px 18px;
+}
+
+.seller-contact-actions {
+grid-template-columns: 1fr;
+}
+}

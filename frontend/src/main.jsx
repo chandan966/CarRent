@@ -5,11 +5,14 @@ import "./index.css";
 import App from "./App.jsx";
 
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { FavoritesProvider } from "./hooks/useFavorites.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <FavoritesProvider>
+        <App />
+      </FavoritesProvider>
     </AuthProvider>
   </StrictMode>
 );  

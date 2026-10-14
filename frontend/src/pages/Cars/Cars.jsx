@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Heart,
@@ -8,10 +9,11 @@ import {
 } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
+import { useFavorites } from "../../hooks/useFavorites";
 
 import "./Cars.css";
 
-const carsData = [
+export const carsData = [
   {
     id: 1,
     name: "BMW 3 Series",
@@ -105,51 +107,9 @@ const carsData = [
 ];
 
 const Cars = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [favorites, setFavorites] = useState(() => {
-    if (typeof window === "undefined") return [];
-
-    const savedFavorites = localStorage.getItem("favoriteCars");
-
-    if (!savedFavorites) return [];
-
-    try {
-      const parsedFavorites = JSON.parse(savedFavorites);
-      return parsedFavorites.map((car) => car.id);
-    } catch (error) {
-      console.error("Error loading favorites:", error);
-      return [];
-    }
-  });
-
-  // Add/remove favorite
-  const toggleFavorite = (car) => {
-    const savedFavorites =
-      JSON.parse(localStorage.getItem("favoriteCars")) || [];
-
-    const alreadyFavorite = savedFavorites.some(
-      (favoriteCar) => favoriteCar.id === car.id
-    );
-
-    let updatedFavorites;
-
-    if (alreadyFavorite) {
-      updatedFavorites = savedFavorites.filter(
-        (favoriteCar) => favoriteCar.id !== car.id
-      );
-    } else {
-      updatedFavorites = [...savedFavorites, car];
-    }
-
-    localStorage.setItem(
-      "favoriteCars",
-      JSON.stringify(updatedFavorites)
-    );
-
-    setFavorites(
-      updatedFavorites.map((favoriteCar) => favoriteCar.id)
-    );
-  };
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const filteredCars = carsData.filter((car) =>
     `${car.brand} ${car.model} ${car.type}`
@@ -239,24 +199,21 @@ const Cars = () => {
                     />
 
                     <button
-                      className={`favorite-button ${
-                        favorites.includes(car.id)
-                          ? "active"
-                          : ""
-                      }`}
+                      className={`favorite-button ${isFavorite(car, "buy") ? "active" : ""}`}
                       onClick={() =>
-                        toggleFavorite(car)
+                        toggleFavorite({ ...car, detailRoute: "/cars" }, "buy")
                       }
                       aria-label={
-                        favorites.includes(car.id)
+                        isFavorite(car, "buy")
                           ? "Remove from favorites"
                           : "Add to favorites"
                       }
+                      aria-pressed={isFavorite(car, "buy")}
                     >
                       <Heart
                         size={19}
                         fill={
-                          favorites.includes(car.id)
+                          isFavorite(car, "buy")
                             ? "currentColor"
                             : "none"
                         }
@@ -316,6 +273,8 @@ const Cars = () => {
 
                     <button
                       className="car-details-button"
+                      type="button"
+                      onClick={() => navigate(`/cars/${car.id}`)}
                     >
                       View Details
                     </button>

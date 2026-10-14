@@ -120,7 +120,7 @@ const RentDetail = () => {
   }
 
   const handleRentNow = () => {
-    navigate(`/booking?carId=${car.id}&type=rent`);
+   navigate(`/booking?car=${car.id}&type=rent`);
   };
 
   return (

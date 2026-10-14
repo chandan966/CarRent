@@ -18,7 +18,7 @@ import Navbar from "../../components/Navbar/Navbar";
 
 import "./MyRental.css";
 
-const rentalData = [
+export const rentalData = [
   {
     id: "RNT-2026-001",
     carId: 1,

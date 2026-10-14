@@ -418,6 +418,10 @@
   transform: scale(1.06);
 }
 
+.buy-favorite.active {
+  color: #ef4444;
+}
+
 
 /* =========================================================
    CAR CONTENT

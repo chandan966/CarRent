@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
+import { useFavorites } from "../../hooks/useFavorites";
 
 const cars = [
   {
@@ -115,6 +116,7 @@ const cars = [
 
 const Buy = () => {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
@@ -340,11 +342,12 @@ const Buy = () => {
                   )}
 
                   <button
-                    className="buy-favorite"
+                    className={`buy-favorite ${isFavorite(car, "buy") ? "active" : ""}`}
                     type="button"
-                    aria-label="Add to favorites"
+                    onClick={() => toggleFavorite(car, "buy")}
+                    aria-label={isFavorite(car, "buy") ? `Remove ${car.name} from favorites` : `Add ${car.name} to favorites`}
                   >
-                    <Heart size={18} />
+                    <Heart size={18} fill={isFavorite(car, "buy") ? "currentColor" : "none"} />
                   </button>
                 </div>
 

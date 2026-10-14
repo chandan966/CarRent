@@ -22,12 +22,18 @@ import {
 import { useAuth } from "../../context/useAuth";
 import { storeUser } from "../../context/authHelpers";
 import Navbar from "../../components/Navbar/Navbar";
+import { useFavorites } from "../../hooks/useFavorites";
+import { getBookingHistory } from "../../utils/bookingStorage";
+import { purchaseData } from "./MyPurchases";
+import { rentalData } from "./MyRental";
 
 import "./Profile.css";
 
 function Profile() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { favorites } = useFavorites();
+  const [bookingCount] = useState(() => getBookingHistory().length);
 
   const [profileImage, setProfileImage] = useState(
     localStorage.getItem("profileImage") || ""
@@ -202,7 +208,7 @@ function Profile() {
               </div>
 
               <div>
-                <strong>0</strong>
+                <strong>{favorites.length}</strong>
                 <span>Favorites</span>
               </div>
 
@@ -210,7 +216,7 @@ function Profile() {
             </button>
 
             <button
-              className="profile-stat-card"
+              className="profile-stat-card profile-stat-card--purchase"
               onClick={() => navigate("/my-purchases")}
             >
               <div className="profile-stat-icon purchase">
@@ -218,7 +224,7 @@ function Profile() {
               </div>
 
               <div>
-                <strong>0</strong>
+                <strong>{purchaseData.length}</strong>
                 <span>Purchases</span>
               </div>
 
@@ -226,7 +232,7 @@ function Profile() {
             </button>
 
             <button
-              className="profile-stat-card"
+              className="profile-stat-card profile-stat-card--rental"
               onClick={() => navigate("/my-rentals")}
             >
               <div className="profile-stat-icon rental">
@@ -234,23 +240,29 @@ function Profile() {
               </div>
 
               <div>
-                <strong>0</strong>
+                <strong>{rentalData.length}</strong>
                 <span>Rentals</span>
               </div>
 
               <ChevronRight size={18} />
             </button>
 
-            <div className="profile-stat-card profile-stat-static">
+            <button
+              className="profile-stat-card profile-stat-card--booking"
+              type="button"
+              onClick={() => navigate("/my-bookings")}
+            >
               <div className="profile-stat-icon cars">
                 <CarFront size={21} />
               </div>
 
               <div>
-                <strong>0</strong>
+                <strong>{bookingCount}</strong>
                 <span>Bookings</span>
               </div>
-            </div>
+
+              <ChevronRight size={18} />
+            </button>
           </section>
 
           {/* MAIN CONTENT */}

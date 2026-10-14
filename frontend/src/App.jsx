@@ -18,9 +18,11 @@ import RentDetail from "./pages/Rent/RentDetails";
 
 // Sell
 import Sell from "./pages/Sell/Sell";
+import SellCar from "./pages/Sell/sellCar";
 
 // Cars - Public
 import Cars from "./pages/Cars/Cars";
+import CarsDetails from "./pages/Cars/CarsDetails";
 
 // Services
 import Services from "./pages/Services/Services";
@@ -37,6 +39,7 @@ import Profile from "./pages/Profile/Profile";
 import Favorites from "./pages/Profile/Favorites";
 import MyPurchases from "./pages/Profile/MyPurchases";
 import MyRentals from "./pages/Profile/MyRental";
+import MyBookings from "./pages/Profile/MyBookings";
 
 // Route Protection
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -144,6 +147,15 @@ function App() {
           }
         />
 
+        <Route
+          path="/sell/cars"
+          element={
+            <ProtectedRoute>
+              <SellCar />
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* ================================
             CARS
@@ -152,6 +164,11 @@ function App() {
         <Route
           path="/cars"
           element={<Cars />}
+        />
+
+        <Route
+          path="/cars/:id"
+          element={<CarsDetails />}
         />
 
 
@@ -242,6 +259,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MyRentals />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-bookings"
+          element={
+            <ProtectedRoute>
+              <MyBookings />
             </ProtectedRoute>
           }
         />

@@ -1,0 +1,228 @@
+.my-bookings-page {
+  min-height: calc(100vh - 70px);
+  padding: 42px 24px 80px;
+  background: #f8fafc;
+}
+
+.my-bookings-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.my-bookings-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 26px;
+  padding: 10px 14px;
+  border: 1px solid #dbe4ee;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.my-bookings-back:hover {
+  transform: translateX(-2px);
+  border-color: #7dd3fc;
+  color: #0284c7;
+}
+
+.my-bookings-back:focus-visible,
+.my-bookings-empty button:focus-visible {
+  outline: 3px solid rgba(14, 165, 233, 0.35);
+  outline-offset: 3px;
+}
+
+.my-bookings-header {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  margin-bottom: 26px;
+  padding: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.my-bookings-icon,
+.my-booking-car-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 15px;
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.my-bookings-header span {
+  color: #059669;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.my-bookings-header h1 {
+  margin: 5px 0;
+  color: #0f172a;
+  font-size: 30px;
+}
+
+.my-bookings-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.my-bookings-list {
+  display: grid;
+  gap: 14px;
+}
+
+.my-booking-card {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding: 21px;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.my-booking-card:hover {
+  transform: translateY(-2px);
+  border-color: #a7f3d0;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+.my-booking-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.my-booking-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.my-booking-title-row h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.my-booking-status {
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.my-booking-main > p {
+  margin: 6px 0 12px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.my-booking-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.my-booking-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.my-booking-meta svg {
+  color: #059669;
+}
+
+.my-bookings-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 55px 24px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.my-bookings-empty > svg {
+  color: #059669;
+}
+
+.my-bookings-empty h2 {
+  margin: 15px 0 7px;
+  color: #0f172a;
+}
+
+.my-bookings-empty p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.my-bookings-empty button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: #059669;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.my-bookings-empty button:hover {
+  transform: translateY(-2px);
+  background: #047857;
+}
+
+.my-bookings-empty button:focus-visible {
+  outline: 3px solid rgba(5, 150, 105, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .my-bookings-page {
+    padding: 28px 16px 60px;
+  }
+
+  .my-bookings-header {
+    padding: 19px;
+  }
+
+  .my-booking-card {
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .my-booking-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

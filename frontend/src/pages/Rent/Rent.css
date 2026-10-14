@@ -451,6 +451,10 @@
   transform: scale(1.08);
 }
 
+.rent-favorite.active {
+  color: #ef4444;
+}
+
 /* =========================
    CAR CONTENT
 ========================= */

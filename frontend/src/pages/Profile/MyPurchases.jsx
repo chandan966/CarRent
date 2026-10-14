@@ -18,7 +18,7 @@ import Navbar from "../../components/Navbar/Navbar";
 
 import "./MyPurchases.css";
 
-const purchaseData = [
+export const purchaseData = [
   {
     id: "PUR-2026-001",
     carId: 1,

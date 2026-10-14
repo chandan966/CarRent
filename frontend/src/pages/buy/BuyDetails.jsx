@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
+import ContactSeller from "./ContactSeller";
+import { useFavorites } from "../../hooks/useFavorites";
 import "./BuyDetails.css";
 
 const cars = [
@@ -30,6 +32,8 @@ const cars = [
     image:
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
     badge: "Featured",
+    sellerName: "Aarav Sharma",
+    sellerPhone: "+91 98765 43210",
   },
   {
     id: 2,
@@ -46,6 +50,8 @@ const cars = [
     image:
       "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80",
     badge: "Premium",
+    sellerName: "Riya Mehta",
+    sellerPhone: "+91 98100 22334",
   },
   {
     id: 3,
@@ -62,6 +68,8 @@ const cars = [
     image:
       "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=80",
     badge: "Popular",
+    sellerName: "Karan Nair",
+    sellerPhone: "+91 98222 33445",
   },
   {
     id: 4,
@@ -78,6 +86,8 @@ const cars = [
     image:
       "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?auto=format&fit=crop&w=1200&q=80",
     badge: "New",
+    sellerName: "Sanjay Verma",
+    sellerPhone: "+91 99001 11223",
   },
   {
     id: 5,
@@ -94,6 +104,8 @@ const cars = [
     image:
       "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
     badge: "Luxury",
+    sellerName: "Neha Kapoor",
+    sellerPhone: "+91 99210 56213",
   },
   {
     id: 6,
@@ -110,6 +122,8 @@ const cars = [
     image:
       "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=80",
     badge: "Premium",
+    sellerName: "Aditya Rao",
+    sellerPhone: "+91 98555 77881",
   },
 ];
 
@@ -118,72 +132,9 @@ function BuyDetails() {
   const navigate = useNavigate();
 
   const car = cars.find((item) => item.id === Number(id));
-
-  const [isFavorite, setIsFavorite] = useState(() => {
-    if (!car) return false;
-
-    const savedFavorites = localStorage.getItem("favoriteCars");
-
-    if (!savedFavorites) return false;
-
-    try {
-      const favorites = JSON.parse(savedFavorites);
-      return favorites.some((favorite) => favorite.id === car.id);
-    } catch (error) {
-      console.error("Error reading favorites:", error);
-      return false;
-    }
-  });
-
-  const toggleFavorite = () => {
-    if (!car) return;
-
-    const savedFavorites = localStorage.getItem("favoriteCars");
-
-    let favorites = [];
-
-    if (savedFavorites) {
-      try {
-        favorites = JSON.parse(savedFavorites);
-      } catch (error) {
-        console.error("Error reading favorites:", error);
-        favorites = [];
-      }
-    }
-
-    const alreadyFavorite = favorites.some(
-      (favorite) => favorite.id === car.id
-    );
-
-    if (alreadyFavorite) {
-      favorites = favorites.filter(
-        (favorite) => favorite.id !== car.id
-      );
-
-      setIsFavorite(false);
-    } else {
-      const favoriteCar = {
-        id: car.id,
-        name: car.name,
-        year: car.year,
-        price: car.priceLabel,
-        location: car.location,
-        fuel: car.fuel,
-        transmission: car.transmission,
-        mileage: car.mileage,
-        image: car.image,
-      };
-
-      favorites.push(favoriteCar);
-
-      setIsFavorite(true);
-    }
-
-    localStorage.setItem(
-      "favoriteCars",
-      JSON.stringify(favorites)
-    );
-  };
+  const [selectedSellerCar, setSelectedSellerCar] = useState(null);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(car, "buy");
 
   if (!car) {
     return (
@@ -239,16 +190,16 @@ function BuyDetails() {
 
                 <button
                   className={`buy-details-favorite ${
-                    isFavorite ? "active" : ""
+                    favorite ? "active" : ""
                   }`}
-                  onClick={toggleFavorite}
+                  onClick={() => toggleFavorite(car, "buy")}
                   aria-label={
-                    isFavorite
+                    favorite
                       ? "Remove from favorites"
                       : "Add to favorites"
                   }
                   title={
-                    isFavorite
+                    favorite
                       ? "Remove from favorites"
                       : "Add to favorites"
                   }
@@ -256,7 +207,7 @@ function BuyDetails() {
                   <Heart
                     size={21}
                     fill={
-                      isFavorite
+                      favorite
                         ? "currentColor"
                         : "none"
                     }
@@ -342,7 +293,10 @@ function BuyDetails() {
                   Buy This Car
                 </button>
 
-                <button className="buy-details-secondary">
+                <button
+                  className="buy-details-secondary"
+                  onClick={() => setSelectedSellerCar(car)}
+                >
                   Contact Seller
                 </button>
 
@@ -352,6 +306,11 @@ function BuyDetails() {
           </div>
         </div>
       </main>
+
+      <ContactSeller
+        car={selectedSellerCar}
+        onClose={() => setSelectedSellerCar(null)}
+      />
     </>
   );
 }

@@ -1,8 +1,57 @@
+import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
+import { useFavorites } from "../../hooks/useFavorites";
+
+const featuredCars = [
+  {
+    id: 1,
+    name: "BMW 3 Series",
+    brand: "BMW",
+    year: 2024,
+    price: "₹45L",
+    priceLabel: "₹45L",
+    location: "Mumbai",
+    fuel: "Petrol",
+    transmission: "Automatic",
+    mileage: "15 km/l",
+    image:
+      "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1000&q=85",
+  },
+  {
+    id: 2,
+    name: "Mercedes-Benz C-Class",
+    brand: "Mercedes-Benz",
+    year: 2024,
+    price: "₹58L",
+    priceLabel: "₹58L",
+    location: "Navi Mumbai",
+    fuel: "Petrol",
+    transmission: "Automatic",
+    mileage: "14 km/l",
+    image:
+      "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1000&q=85",
+  },
+  {
+    id: 3,
+    name: "Audi A6",
+    brand: "Audi",
+    year: 2025,
+    price: "₹65L",
+    priceLabel: "₹65L",
+    location: "Thane",
+    fuel: "Petrol",
+    transmission: "Automatic",
+    mileage: "15 km/l",
+    image:
+      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1000&q=85",
+  },
+];
+
 const Home = () => {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   return (
     <div className="home-page">
@@ -93,10 +142,12 @@ const Home = () => {
               </span>
 
               <button
-                className="favorite-button"
-                aria-label="Add BMW 3 Series to favorites"
+                className={`favorite-button ${isFavorite(featuredCars[0], "buy") ? "active" : ""}`}
+                onClick={() => toggleFavorite(featuredCars[0], "buy")}
+                aria-label={isFavorite(featuredCars[0], "buy") ? "Remove BMW 3 Series from favorites" : "Add BMW 3 Series to favorites"}
+                type="button"
               >
-                ♡
+                <Heart size={20} fill={isFavorite(featuredCars[0], "buy") ? "currentColor" : "none"} />
               </button>
             </div>
 
@@ -140,10 +191,12 @@ const Home = () => {
               </span>
 
               <button
-                className="favorite-button"
-                aria-label="Add Mercedes-Benz C-Class to favorites"
+                className={`favorite-button ${isFavorite(featuredCars[1], "buy") ? "active" : ""}`}
+                onClick={() => toggleFavorite(featuredCars[1], "buy")}
+                aria-label={isFavorite(featuredCars[1], "buy") ? "Remove Mercedes-Benz C-Class from favorites" : "Add Mercedes-Benz C-Class to favorites"}
+                type="button"
               >
-                ♡
+                <Heart size={20} fill={isFavorite(featuredCars[1], "buy") ? "currentColor" : "none"} />
               </button>
             </div>
 
@@ -187,10 +240,12 @@ const Home = () => {
               </span>
 
               <button
-                className="favorite-button"
-                aria-label="Add Audi A6 to favorites"
+                className={`favorite-button ${isFavorite(featuredCars[2], "buy") ? "active" : ""}`}
+                onClick={() => toggleFavorite(featuredCars[2], "buy")}
+                aria-label={isFavorite(featuredCars[2], "buy") ? "Remove Audi A6 from favorites" : "Add Audi A6 to favorites"}
+                type="button"
               >
-                ♡
+                <Heart size={20} fill={isFavorite(featuredCars[2], "buy") ? "currentColor" : "none"} />
               </button>
             </div>
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { saveBooking } from "../../utils/bookingStorage";
 import "./BookingForm.css";
 
 const locationData = {
@@ -644,10 +645,7 @@ function BookingForm({ car, type }) {
       bookingData.days = formData.get("days");
     }
 
-    localStorage.setItem(
-      "latestBooking",
-      JSON.stringify(bookingData)
-    );
+    saveBooking(bookingData);
 
     alert(`Booking request submitted for ${car.name}.`);
   };
