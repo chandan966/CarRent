@@ -14,106 +14,9 @@ import {
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
+import { rentalCars } from "../../data/cars";
 import "./Rent.css";
 
-const rentalCars = [
-  {
-    id: 1,
-    name: "BMW 3 Series",
-    brand: "BMW",
-    year: 2024,
-    pricePerDay: 4500,
-    priceLabel: "₹4,500/day",
-    location: "Mumbai",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    seats: 5,
-    mileage: "14.2 km/l",
-    image:
-      "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1200&q=85",
-    badge: "POPULAR",
-  },
-  {
-    id: 2,
-    name: "Mercedes-Benz C-Class",
-    brand: "Mercedes-Benz",
-    year: 2024,
-    pricePerDay: 5500,
-    priceLabel: "₹5,500/day",
-    location: "Navi Mumbai",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    seats: 5,
-    mileage: "16.9 km/l",
-    image:
-      "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1200&q=85",
-    badge: "PREMIUM",
-  },
-  {
-    id: 3,
-    name: "Audi A6",
-    brand: "Audi",
-    year: 2025,
-    pricePerDay: 6000,
-    priceLabel: "₹6,000/day",
-    location: "Thane",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    seats: 5,
-    mileage: "14.1 km/l",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85",
-    badge: "NEW",
-  },
-  {
-    id: 4,
-    name: "BMW X5",
-    brand: "BMW",
-    year: 2024,
-    pricePerDay: 8500,
-    priceLabel: "₹8,500/day",
-    location: "Mumbai",
-    fuel: "Diesel",
-    transmission: "Automatic",
-    seats: 5,
-    mileage: "12.4 km/l",
-    image:
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=85",
-    badge: "LUXURY",
-  },
-  {
-    id: 5,
-    name: "Mercedes-Benz GLC",
-    brand: "Mercedes-Benz",
-    year: 2024,
-    pricePerDay: 7000,
-    priceLabel: "₹7,000/day",
-    location: "Pune",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    seats: 5,
-    mileage: "14.7 km/l",
-    image:
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=85",
-    badge: "FEATURED",
-  },
-  {
-    id: 6,
-    name: "Audi Q7",
-    brand: "Audi",
-    year: 2025,
-    pricePerDay: 9000,
-    priceLabel: "₹9,000/day",
-    location: "Navi Mumbai",
-    fuel: "Diesel",
-    transmission: "Automatic",
-    seats: 7,
-    mileage: "11.8 km/l",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85",
-    badge: "PREMIUM",
-  },
-];
 
 const Rent = () => {
   const navigate = useNavigate();
@@ -128,6 +31,8 @@ const Rent = () => {
   const [returnDate, setReturnDate] = useState("");
   const [sort, setSort] = useState("recommended");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const currentDate = new Date();
+  const today = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
   const filteredCars = useMemo(() => {
     let result = rentalCars.filter((car) => {
@@ -221,7 +126,10 @@ const Rent = () => {
     returnDate;
 
   const handleRentNow = (car) => {
-    navigate(`/car/${car.id}?type=rent`);
+    const params = new URLSearchParams({ type: "rent" });
+    if (pickupDate) params.set("pickup", pickupDate);
+    if (returnDate) params.set("return", returnDate);
+    navigate(`/car/${car.id}?${params.toString()}`);
   };
 
   return (
@@ -308,8 +216,12 @@ const Rent = () => {
               <input
                 type="date"
                 value={pickupDate}
+                min={today}
                 onChange={(e) =>
-                  setPickupDate(e.target.value)
+                  {
+                    setPickupDate(e.target.value);
+                    if (returnDate && returnDate <= e.target.value) setReturnDate("");
+                  }
                 }
               />
             </div>
@@ -324,6 +236,7 @@ const Rent = () => {
               <input
                 type="date"
                 value={returnDate}
+                min={pickupDate || today}
                 onChange={(e) =>
                   setReturnDate(e.target.value)
                 }

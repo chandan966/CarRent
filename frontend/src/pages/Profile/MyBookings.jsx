@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -10,7 +9,7 @@ import {
 } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
-import { getBookingHistory } from "../../utils/bookingStorage";
+import { useBookings } from "../../hooks/useBookings";
 import "./MyBookings.css";
 
 function formatBookingDate(value) {
@@ -21,7 +20,7 @@ function formatBookingDate(value) {
 
 function MyBookings() {
   const navigate = useNavigate();
-  const [bookings] = useState(getBookingHistory);
+  const { bookings, isLoading, error } = useBookings();
 
   return (
     <>
@@ -48,7 +47,11 @@ function MyBookings() {
             </div>
           </header>
 
-          {bookings.length === 0 ? (
+          {isLoading ? (
+            <section className="my-bookings-empty" role="status">Loading your bookings…</section>
+          ) : error ? (
+            <section className="my-bookings-empty" role="alert">{error}</section>
+          ) : bookings.length === 0 ? (
             <section className="my-bookings-empty">
               <CarFront size={38} />
               <h2>No bookings yet</h2>

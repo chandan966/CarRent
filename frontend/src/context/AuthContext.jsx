@@ -1,56 +1,85 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./authContext";
 import {
-  getStoredUser,
-  removeStoredUser,
-  resolveRole,
-  storeUser,
-} from "./authHelpers";
+  getCurrentUser,
+  signIn,
+  signOut,
+  signUp,
+  updateAccountProfile,
+} from "../Services/authServices";
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => getStoredUser());
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = (userData) => {
-    const normalizedUser = {
-      ...userData,
-      role: resolveRole(userData),
+  useEffect(() => {
+    let active = true;
+    for (const key of [
+      "carrent.auth.user",
+      "user",
+      "isLoggedIn",
+      "carRentalBookingHistory",
+      "latestBooking",
+      "profileImage",
+    ]) {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        // Browser storage can be unavailable in privacy-restricted contexts.
+      }
+    }
+    getCurrentUser()
+      .then((currentUser) => {
+        if (active) setUser(currentUser);
+      })
+      .catch(() => {
+        if (active) setUser(null);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
     };
+  }, []);
 
-    storeUser(normalizedUser);
+  const login = useCallback(async (credentials) => {
+    const authenticatedUser = await signIn(credentials);
+    setUser(authenticatedUser);
+    return authenticatedUser;
+  }, []);
 
-    setUser(normalizedUser);
-  };
+  const signup = useCallback(async (account) => {
+    const registeredUser = await signUp(account);
+    setUser(registeredUser);
+    return registeredUser;
+  }, []);
 
-  const logout = () => {
-    removeStoredUser();
-    localStorage.removeItem("profileImage");
+  const logout = useCallback(async () => {
+    try {
+      await signOut();
+    } finally {
+      setUser(null);
+    }
+  }, []);
 
-    setUser(null);
-  };
+  const updateProfile = useCallback(async (profile) => {
+    const updatedUser = await updateAccountProfile(profile);
+    setUser(updatedUser);
+    return updatedUser;
+  }, []);
 
-  const signup = (userData) => {
-    const normalizedUser = {
-      ...userData,
-      role: resolveRole(userData),
-    };
+  const value = useMemo(() => ({
+    user,
+    isLoading,
+    login,
+    signup,
+    logout,
+    updateProfile,
+    isAuthenticated: Boolean(user),
+    isAdmin: user?.role === "admin",
+  }), [user, isLoading, login, signup, logout, updateProfile]);
 
-    storeUser(normalizedUser);
-
-    setUser(normalizedUser);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        signup,
-        logout,
-        isAuthenticated: !!user,
-        isAdmin: user?.role === "admin",
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

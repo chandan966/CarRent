@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
-import { carsData } from "./Cars";
+import { carsData } from "../../data/cars";
 import "./CarsDetails.css";
 
 function CarsDetails() {
@@ -96,9 +96,9 @@ function CarsDetails() {
                   <button
                     className="cars-details-buy"
                     type="button"
-                    onClick={() => navigate("/buy")}
+                    onClick={() => navigate(`/buy/${car.id}`)}
                   >
-                    Buy Cars
+                    View Buy Listing
                   </button>
                   <button
                     className="cars-details-all"

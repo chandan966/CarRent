@@ -1,5 +1,7 @@
 
 import { useState } from "react";
+import { getPurchaseHistory } from "../../utils/bookingStorage";
+import { useBookings } from "../../hooks/useBookings";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,54 +20,26 @@ import Navbar from "../../components/Navbar/Navbar";
 
 import "./MyPurchases.css";
 
-export const purchaseData = [
-  {
-    id: "PUR-2026-001",
-    carId: 1,
-    name: "BMW 3 Series",
-    image:
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=900&q=80",
-    price: "₹42.00 Lakh",
-    location: "Mumbai, Maharashtra",
-    date: "12 Sep 2026",
-    status: "Completed",
-    payment: "Paid",
-  },
-  {
-    id: "PUR-2026-002",
-    carId: 2,
-    name: "Mercedes-Benz C-Class",
-    image:
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=900&q=80",
-    price: "₹58.00 Lakh",
-    location: "Navi Mumbai, Maharashtra",
-    date: "28 Aug 2026",
-    status: "Processing",
-    payment: "Paid",
-  },
-  {
-    id: "PUR-2026-003",
-    carId: 3,
-    name: "Audi A6",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=900&q=80",
-    price: "₹48.00 Lakh",
-    location: "Thane, Maharashtra",
-    date: "15 Jul 2026",
-    status: "Completed",
-    payment: "Paid",
-  },
-];
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+}
 
 function MyPurchases() {
+  const { bookings, isLoading, error } = useBookings();
+  const purchases = getPurchaseHistory(bookings);
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
   const filters = ["All", "Completed", "Processing"];
+  const totalPurchaseValue = purchases.reduce((total, purchase) => total + purchase.amount, 0);
 
-  const filteredPurchases = purchaseData.filter((purchase) => {
+  const filteredPurchases = purchases.filter((purchase) => {
     const matchesSearch =
       purchase.name.toLowerCase().includes(search.toLowerCase()) ||
       purchase.id.toLowerCase().includes(search.toLowerCase());
@@ -114,8 +88,8 @@ function MyPurchases() {
               </div>
 
               <div>
-                <span>Total Purchases</span>
-                <strong>{purchaseData.length}</strong>
+                <span>Purchase Requests</span>
+                <strong>{purchases.length}</strong>
               </div>
             </div>
 
@@ -127,7 +101,7 @@ function MyPurchases() {
               <div>
                 <span>Completed</span>
                 <strong>
-                  {purchaseData.filter(
+                  {purchases.filter(
                     (purchase) => purchase.status === "Completed"
                   ).length}
                 </strong>
@@ -142,7 +116,7 @@ function MyPurchases() {
               <div>
                 <span>Processing</span>
                 <strong>
-                  {purchaseData.filter(
+                  {purchases.filter(
                     (purchase) => purchase.status === "Processing"
                   ).length}
                 </strong>
@@ -155,8 +129,8 @@ function MyPurchases() {
               </div>
 
               <div>
-                <span>Total Value</span>
-                <strong>₹1.48 Cr</strong>
+                <span>Requested Value</span>
+                <strong>{formatCurrency(totalPurchaseValue)}</strong>
               </div>
             </div>
           </section>
@@ -199,12 +173,22 @@ function MyPurchases() {
               </span>
             </div>
 
-            {filteredPurchases.length > 0 ? (
+            {isLoading ? (
+              <div className="purchases-empty" role="status">Loading your purchase requests…</div>
+            ) : error ? (
+              <div className="purchases-empty" role="alert">{error}</div>
+            ) : filteredPurchases.length > 0 ? (
               <div className="purchase-cards">
                 {filteredPurchases.map((purchase) => (
                   <article className="purchase-card" key={purchase.id}>
                     <div className="purchase-image">
-                      <img src={purchase.image} alt={purchase.name} />
+                      {purchase.image ? (
+                        <img src={purchase.image} alt={purchase.name} />
+                      ) : (
+                        <div className="purchase-image-placeholder" aria-hidden="true">
+                          <CarFront size={42} />
+                        </div>
+                      )}
 
                       <span
                         className={`purchase-status ${purchase.status.toLowerCase()}`}
@@ -247,7 +231,7 @@ function MyPurchases() {
 
                         <div>
                           <span>Payment</span>
-                          <strong className="payment-paid">
+                          <strong className={purchase.payment === "Paid" ? "payment-paid" : "payment-pending"}>
                             <CheckCircle2 size={14} />
                             {purchase.payment}
                           </strong>
@@ -264,11 +248,9 @@ function MyPurchases() {
                       <div className="purchase-actions">
                         <button
                           className="purchase-document-button"
-                          onClick={() =>
-                            alert(
-                              `Invoice for ${purchase.name} (${purchase.id})`
-                            )
-                          }
+                          type="button"
+                          disabled={purchase.payment !== "Paid"}
+                          title={purchase.payment === "Paid" ? "Invoice is available" : "Invoices are available after payment"}
                         >
                           <FileText size={17} />
                           View Invoice
@@ -292,11 +274,12 @@ function MyPurchases() {
                   <CarFront size={32} />
                 </div>
 
-                <h3>No purchases found</h3>
+                <h3>{purchases.length === 0 ? "No purchases yet" : "No purchases found"}</h3>
 
                 <p>
-                  We couldn't find any purchases matching your search or
-                  selected filter.
+                  {purchases.length === 0
+                    ? "Purchase requests you submit will appear here."
+                    : "We couldn't find purchases matching your search or filter."}
                 </p>
 
                 <button onClick={() => navigate("/buy")}>

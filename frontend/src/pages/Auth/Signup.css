@@ -1267,3 +1267,7 @@
     transform: scale(1.12);
   }
 }
+.signup-google-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}

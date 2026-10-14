@@ -20,31 +20,32 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../context/useAuth";
-import { storeUser } from "../../context/authHelpers";
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
-import { getBookingHistory } from "../../utils/bookingStorage";
-import { purchaseData } from "./MyPurchases";
-import { rentalData } from "./MyRental";
+import { getBookingHistory, getPurchaseHistory, getRentalHistory } from "../../utils/bookingStorage";
+import { useBookings } from "../../hooks/useBookings";
 
 import "./Profile.css";
 
 function Profile() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const { favorites } = useFavorites();
-  const [bookingCount] = useState(() => getBookingHistory().length);
+  const { bookings } = useBookings();
+  const profileImageKey = `profileImage:${String(user?.email || "").toLowerCase()}`;
+  const bookingCount = getBookingHistory(bookings).length;
+  const purchaseCount = getPurchaseHistory(bookings).length;
+  const rentalCount = getRentalHistory(bookings).length;
 
-  const [profileImage, setProfileImage] = useState(
-    localStorage.getItem("profileImage") || ""
-  );
+  const [profileImage, setProfileImage] = useState(() => localStorage.getItem(profileImageKey) || "");
 
   const [isEditing, setIsEditing] = useState(false);
+  const [profileNotice, setProfileNotice] = useState("");
 
   const [profileData, setProfileData] = useState({
     fullName: user?.fullName || "CarRent User",
     email: user?.email || "Not available",
-    phone: user?.phone || "Not available",
+    phone: user?.phone || "",
     location: user?.location || "India",
   });
 
@@ -53,8 +54,13 @@ function Profile() {
 
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      alert("Please select a valid image.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setProfileNotice("Choose a JPEG, PNG, or WebP profile photo.");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setProfileNotice("Profile photos must be 2 MB or smaller.");
       return;
     }
 
@@ -63,9 +69,16 @@ function Profile() {
     reader.onload = () => {
       const imageUrl = reader.result;
 
-      setProfileImage(imageUrl);
-      localStorage.setItem("profileImage", imageUrl);
+      try {
+        localStorage.setItem(profileImageKey, imageUrl);
+        setProfileImage(imageUrl);
+        setProfileNotice("");
+      } catch {
+        setProfileNotice("This photo could not be saved in browser storage.");
+      }
     };
+
+    reader.onerror = () => setProfileNotice("The selected photo could not be read.");
 
     reader.readAsDataURL(file);
   };
@@ -79,25 +92,28 @@ function Profile() {
     }));
   };
 
-  const handleSaveProfile = () => {
-    const updatedUser = {
-      ...user,
-      fullName: profileData.fullName,
-      email: profileData.email,
-      phone: profileData.phone,
-      location: profileData.location,
-    };
-
-    storeUser(updatedUser);
-
-    setIsEditing(false);
-
-    window.location.reload();
+  const handleSaveProfile = async () => {
+    setProfileNotice("");
+    try {
+      const updatedUser = await updateProfile({
+        fullName: profileData.fullName,
+        phone: profileData.phone,
+        location: profileData.location,
+      });
+      setProfileData((previous) => ({ ...previous, ...updatedUser }));
+      setIsEditing(false);
+      setProfileNotice("Profile updated.");
+    } catch (error) {
+      setProfileNotice(error.message);
+    }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate("/login");
+    }
   };
 
   const firstName =
@@ -172,7 +188,7 @@ function Profile() {
 
                   <span className="profile-verified">
                     <ShieldCheck size={15} />
-                    Verified
+                    Registered
                   </span>
                 </div>
 
@@ -224,7 +240,7 @@ function Profile() {
               </div>
 
               <div>
-                <strong>{purchaseData.length}</strong>
+                <strong>{purchaseCount}</strong>
                 <span>Purchases</span>
               </div>
 
@@ -240,7 +256,7 @@ function Profile() {
               </div>
 
               <div>
-                <strong>{rentalData.length}</strong>
+                <strong>{rentalCount}</strong>
                 <span>Rentals</span>
               </div>
 
@@ -307,7 +323,7 @@ function Profile() {
                         type="email"
                         name="email"
                         value={profileData.email}
-                        onChange={handleInputChange}
+                        disabled
                       />
                     </div>
                   </div>
@@ -344,6 +360,7 @@ function Profile() {
 
                   <button
                     className="profile-save-button"
+                    type="button"
                     onClick={handleSaveProfile}
                   >
                     <ShieldCheck size={18} />
@@ -381,7 +398,7 @@ function Profile() {
 
                     <div>
                       <span>Phone Number</span>
-                      <strong>{profileData.phone}</strong>
+                      <strong>{profileData.phone || "Not provided"}</strong>
                     </div>
                   </div>
 
@@ -397,6 +414,7 @@ function Profile() {
                   </div>
                 </div>
               )}
+              {profileNotice && <p className="profile-notice" role="status">{profileNotice}</p>}
             </section>
 
             {/* QUICK ACTIONS */}

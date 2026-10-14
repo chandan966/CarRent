@@ -1,5 +1,7 @@
 
 import { useState } from "react";
+import { getRentalHistory } from "../../utils/bookingStorage";
+import { useBookings } from "../../hooks/useBookings";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,60 +20,25 @@ import Navbar from "../../components/Navbar/Navbar";
 
 import "./MyRental.css";
 
-export const rentalData = [
-  {
-    id: "RNT-2026-001",
-    carId: 1,
-    name: "BMW 3 Series",
-    image:
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1000&q=80",
-    location: "Mumbai, Maharashtra",
-    startDate: "18 Sep 2026",
-    endDate: "22 Sep 2026",
-    duration: "4 Days",
-    price: "₹24,000",
-    status: "Upcoming",
-    payment: "Paid",
-  },
-  {
-    id: "RNT-2026-002",
-    carId: 2,
-    name: "Mercedes-Benz C-Class",
-    image:
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1000&q=80",
-    location: "Navi Mumbai, Maharashtra",
-    startDate: "10 Sep 2026",
-    endDate: "14 Sep 2026",
-    duration: "4 Days",
-    price: "₹32,000",
-    status: "Completed",
-    payment: "Paid",
-  },
-  {
-    id: "RNT-2026-003",
-    carId: 3,
-    name: "Audi A6",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1000&q=80",
-    location: "Thane, Maharashtra",
-    startDate: "02 Sep 2026",
-    endDate: "05 Sep 2026",
-    duration: "3 Days",
-    price: "₹27,000",
-    status: "Completed",
-    payment: "Paid",
-  },
-];
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+}
 
 function MyRentals() {
+  const { bookings, isLoading, error } = useBookings();
+  const rentals = getRentalHistory(bookings);
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filters = ["All", "Upcoming", "Completed"];
+  const filters = ["All", "Pending", "Upcoming", "Completed"];
 
-  const filteredRentals = rentalData.filter((rental) => {
+  const filteredRentals = rentals.filter((rental) => {
     const matchesSearch =
       rental.name.toLowerCase().includes(search.toLowerCase()) ||
       rental.id.toLowerCase().includes(search.toLowerCase());
@@ -82,13 +49,9 @@ function MyRentals() {
     return matchesSearch && matchesFilter;
   });
 
-  const upcomingCount = rentalData.filter(
-    (rental) => rental.status === "Upcoming"
-  ).length;
-
-  const completedCount = rentalData.filter(
-    (rental) => rental.status === "Completed"
-  ).length;
+  const pendingCount = rentals.filter((rental) => rental.status === "Pending").length;
+  const completedCount = rentals.filter((rental) => rental.status === "Completed").length;
+  const totalSpent = rentals.reduce((total, rental) => total + (rental.payment === "Paid" ? rental.amount : 0), 0);
 
   return (
     <>
@@ -137,7 +100,7 @@ function MyRentals() {
 
               <div>
                 <span>Total Rentals</span>
-                <strong>{rentalData.length}</strong>
+                <strong>{rentals.length}</strong>
               </div>
             </div>
 
@@ -147,8 +110,8 @@ function MyRentals() {
               </div>
 
               <div>
-                <span>Upcoming</span>
-                <strong>{upcomingCount}</strong>
+                <span>Pending</span>
+                <strong>{pendingCount}</strong>
               </div>
             </div>
 
@@ -170,7 +133,7 @@ function MyRentals() {
 
               <div>
                 <span>Total Spent</span>
-                <strong>₹83,000</strong>
+                <strong>{formatCurrency(totalSpent)}</strong>
               </div>
             </div>
 
@@ -224,7 +187,11 @@ function MyRentals() {
               </span>
             </div>
 
-            {filteredRentals.length > 0 ? (
+            {isLoading ? (
+              <div className="rentals-empty" role="status">Loading your rental requests…</div>
+            ) : error ? (
+              <div className="rentals-empty" role="alert">{error}</div>
+            ) : filteredRentals.length > 0 ? (
 
               <div className="rental-cards">
 
@@ -236,18 +203,21 @@ function MyRentals() {
 
                     <div className="rental-image">
 
-                      <img
-                        src={rental.image}
-                        alt={rental.name}
-                      />
+                      {rental.image ? (
+                        <img src={rental.image} alt={rental.name} />
+                      ) : (
+                        <div className="rental-image-placeholder" aria-hidden="true">
+                          <CarFront size={42} />
+                        </div>
+                      )}
 
                       <span
                         className={`rental-status ${rental.status.toLowerCase()}`}
                       >
-                        {rental.status === "Upcoming" ? (
-                          <Clock3 size={14} />
-                        ) : (
+                        {rental.status === "Completed" ? (
                           <CheckCircle2 size={14} />
+                        ) : (
+                          <Clock3 size={14} />
                         )}
 
                         {rental.status}
@@ -306,7 +276,7 @@ function MyRentals() {
 
                         <div>
                           <span>Payment</span>
-                          <strong className="rental-payment">
+                          <strong className={"rental-payment " + (rental.payment === "Paid" ? "paid" : "pending")}>
                             <CheckCircle2 size={14} />
                             {rental.payment}
                           </strong>
@@ -328,25 +298,21 @@ function MyRentals() {
                         {rental.status === "Upcoming" && (
                           <button
                             className="rental-manage-button"
-                            onClick={() =>
-                              alert(
-                                `Managing rental ${rental.id}`
-                              )
-                            }
+                            type="button"
+                            disabled
+                            title="Rental management will be available when booking management is connected."
                           >
                             <Clock3 size={17} />
                             Manage Rental
                           </button>
                         )}
 
-                        {rental.status === "Completed" && (
+                        {rental.status === "Completed" && rental.payment === "Paid" && (
                           <button
                             className="rental-document-button"
-                            onClick={() =>
-                              alert(
-                                `Rental receipt for ${rental.id}`
-                              )
-                            }
+                            type="button"
+                            disabled
+                            title="Receipts are not available until online payments are connected."
                           >
                             <CheckCircle2 size={17} />
                             View Receipt
@@ -356,7 +322,7 @@ function MyRentals() {
                         <button
                           className="rental-car-button"
                           onClick={() =>
-                            navigate(`/buy/${rental.carId}`)
+                            navigate(`/car/${rental.carId}?type=rent`)
                           }
                         >
                           View Car
@@ -381,11 +347,12 @@ function MyRentals() {
                   <AlertCircle size={32} />
                 </div>
 
-                <h3>No rentals found</h3>
+                <h3>{rentals.length === 0 ? "No rental requests yet" : "No rentals found"}</h3>
 
                 <p>
-                  We couldn't find any rentals matching your search
-                  or selected filter.
+                  {rentals.length === 0
+                    ? "Rental requests you submit will appear here."
+                    : "We couldn't find rentals matching your search or filter."}
                 </p>
 
                 <button onClick={() => navigate("/rent")}>

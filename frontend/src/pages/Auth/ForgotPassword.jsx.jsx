@@ -24,9 +24,7 @@ function ForgotPassword() {
       return;
     }
 
-    setMessage(
-      "If an account exists with this email, a password reset link has been sent."
-    );
+    setMessage("Password reset email is not configured yet. Please contact the site administrator for help.");
   };
 
   return (
@@ -47,8 +45,7 @@ function ForgotPassword() {
         <h1>Forgot Password?</h1>
 
         <p className="forgot-description">
-          Enter your registered email address and we'll send you
-          instructions to reset your password.
+          Enter your registered email address. Password reset is not available until an email provider is connected.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -72,7 +69,7 @@ function ForgotPassword() {
 
           <button type="submit" className="reset-button">
             <Send size={18} />
-            Send Reset Link
+            Check Reset Availability
           </button>
         </form>
 

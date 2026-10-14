@@ -3,51 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
+import { buyCars } from "../../data/cars";
+const featuredCars = buyCars.slice(0, 3);
 
-const featuredCars = [
-  {
-    id: 1,
-    name: "BMW 3 Series",
-    brand: "BMW",
-    year: 2024,
-    price: "₹45L",
-    priceLabel: "₹45L",
-    location: "Mumbai",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    mileage: "15 km/l",
-    image:
-      "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1000&q=85",
-  },
-  {
-    id: 2,
-    name: "Mercedes-Benz C-Class",
-    brand: "Mercedes-Benz",
-    year: 2024,
-    price: "₹58L",
-    priceLabel: "₹58L",
-    location: "Navi Mumbai",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    mileage: "14 km/l",
-    image:
-      "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1000&q=85",
-  },
-  {
-    id: 3,
-    name: "Audi A6",
-    brand: "Audi",
-    year: 2025,
-    price: "₹65L",
-    priceLabel: "₹65L",
-    location: "Thane",
-    fuel: "Petrol",
-    transmission: "Automatic",
-    mileage: "15 km/l",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1000&q=85",
-  },
-];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -133,8 +91,8 @@ const Home = () => {
           <article className="car-card">
             <div className="car-image">
               <img
-                src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1000&q=85"
-                alt="BMW 3 Series"
+                src={featuredCars[0].image}
+                alt={featuredCars[0].name}
               />
 
               <span className="car-badge">
@@ -154,18 +112,18 @@ const Home = () => {
             <div className="car-info">
               <div className="car-title-row">
                 <div>
-                  <h3>BMW 3 Series</h3>
+                  <h3>{featuredCars[0].name}</h3>
 
                   <span>
-                    2024 • Automatic • Petrol
+                    {featuredCars[0].year} • {featuredCars[0].transmission} • {featuredCars[0].fuel}
                   </span>
                 </div>
 
-                <strong>₹45L</strong>
+                <strong>{featuredCars[0].priceLabel}</strong>
               </div>
 
               <div className="car-meta">
-                <span>📍 Mumbai</span>
+                <span>📍 {featuredCars[0].location}</span>
                 <span>● Available</span>
               </div>
 
@@ -182,8 +140,8 @@ const Home = () => {
           <article className="car-card">
             <div className="car-image">
               <img
-                src="https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1000&q=85"
-                alt="Mercedes-Benz C-Class"
+                src={featuredCars[1].image}
+                alt={featuredCars[1].name}
               />
 
               <span className="car-badge">
@@ -203,18 +161,18 @@ const Home = () => {
             <div className="car-info">
               <div className="car-title-row">
                 <div>
-                  <h3>Mercedes-Benz C-Class</h3>
+                  <h3>{featuredCars[1].name}</h3>
 
                   <span>
-                    2024 • Automatic • Petrol
+                    {featuredCars[1].year} • {featuredCars[1].transmission} • {featuredCars[1].fuel}
                   </span>
                 </div>
 
-                <strong>₹58L</strong>
+                <strong>{featuredCars[1].priceLabel}</strong>
               </div>
 
               <div className="car-meta">
-                <span>📍 Navi Mumbai</span>
+                <span>📍 {featuredCars[1].location}</span>
                 <span>● Available</span>
               </div>
 
@@ -231,8 +189,8 @@ const Home = () => {
           <article className="car-card">
             <div className="car-image">
               <img
-                src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1000&q=85"
-                alt="Audi A6"
+                src={featuredCars[2].image}
+                alt={featuredCars[2].name}
               />
 
               <span className="car-badge">
@@ -252,18 +210,18 @@ const Home = () => {
             <div className="car-info">
               <div className="car-title-row">
                 <div>
-                  <h3>Audi A6</h3>
+                  <h3>{featuredCars[2].name}</h3>
 
                   <span>
-                    2025 • Automatic • Petrol
+                    {featuredCars[2].year} • {featuredCars[2].transmission} • {featuredCars[2].fuel}
                   </span>
                 </div>
 
-                <strong>₹65L</strong>
+                <strong>{featuredCars[2].priceLabel}</strong>
               </div>
 
               <div className="car-meta">
-                <span>📍 Thane</span>
+                <span>📍 {featuredCars[2].location}</span>
                 <span>● Available</span>
               </div>
 

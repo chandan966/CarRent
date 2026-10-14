@@ -860,3 +860,9 @@
 .profile-stat-card--booking:focus-visible {
   outline-color: rgba(5, 150, 105, 0.4);
 }
+.profile-notice {
+  margin: 14px 0 0;
+  color: #334155;
+  font-size: 14px;
+}
+

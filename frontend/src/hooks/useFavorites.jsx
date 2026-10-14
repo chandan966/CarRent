@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useAuth } from "../context/useAuth";
 
 const FAVORITES_STORAGE_KEY = "favoriteCars";
 const FavoritesContext = createContext(null);
@@ -21,12 +22,12 @@ export function getFavoriteKey(car, category = car?.category || "buy") {
   return `${category}:${normalizedName}`;
 }
 
-function readFavoriteCars() {
+function readFavoriteCars(storageKey) {
   if (typeof window === "undefined") return [];
 
   try {
     const savedCars = JSON.parse(
-      window.localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]"
+      window.localStorage.getItem(storageKey) || "[]"
     );
     if (!Array.isArray(savedCars)) return [];
 
@@ -51,7 +52,7 @@ function readFavoriteCars() {
     });
 
     window.localStorage.setItem(
-      FAVORITES_STORAGE_KEY,
+      storageKey,
       JSON.stringify(uniqueCars)
     );
     return uniqueCars;
@@ -62,19 +63,35 @@ function readFavoriteCars() {
 }
 
 export function FavoritesProvider({ children }) {
-  const [favorites, setFavorites] = useState(readFavoriteCars);
+  const { user } = useAuth();
+  const storageKey = user?.email
+    ? `${FAVORITES_STORAGE_KEY}:${user.email.trim().toLowerCase()}`
+    : FAVORITES_STORAGE_KEY;
+  const [favoritesState, setFavoritesState] = useState(() => ({
+    key: storageKey,
+    items: readFavoriteCars(storageKey),
+  }));
+  // Read the newly selected account's saved favorites immediately. This avoids
+  // showing the previous account's list for one render while the effect runs.
+  const storedFavorites = useMemo(
+    () => readFavoriteCars(storageKey),
+    [storageKey]
+  );
+  const favorites = favoritesState.key === storageKey
+    ? favoritesState.items
+    : storedFavorites;
 
   useEffect(() => {
     const syncFavoritesFromAnotherTab = (event) => {
-      if (event.key === FAVORITES_STORAGE_KEY || event.key === null) {
-        setFavorites(readFavoriteCars());
+      if (event.key === storageKey || event.key === null) {
+        setFavoritesState({ key: storageKey, items: readFavoriteCars(storageKey) });
       }
     };
 
     window.addEventListener("storage", syncFavoritesFromAnotherTab);
     return () =>
       window.removeEventListener("storage", syncFavoritesFromAnotherTab);
-  }, []);
+  }, [storageKey]);
 
   const isFavorite = useCallback((car, category = car?.category || "buy") => {
     if (!car) return false;
@@ -101,16 +118,16 @@ export function FavoritesProvider({ children }) {
           },
         ];
 
-    setFavorites(updatedFavorites);
+    setFavoritesState({ key: storageKey, items: updatedFavorites });
     try {
       window.localStorage.setItem(
-        FAVORITES_STORAGE_KEY,
+        storageKey,
         JSON.stringify(updatedFavorites)
       );
     } catch (error) {
       console.error("Error saving favorites:", error);
     }
-  }, [favorites]);
+  }, [favorites, storageKey]);
 
   const removeFavorite = useCallback((car) => {
     if (!car) return;
@@ -120,16 +137,16 @@ export function FavoritesProvider({ children }) {
       (favorite) => favorite.favoriteKey !== favoriteKey
     );
 
-    setFavorites(updatedFavorites);
+    setFavoritesState({ key: storageKey, items: updatedFavorites });
     try {
       window.localStorage.setItem(
-        FAVORITES_STORAGE_KEY,
+        storageKey,
         JSON.stringify(updatedFavorites)
       );
     } catch (error) {
       console.error("Error saving favorites:", error);
     }
-  }, [favorites]);
+  }, [favorites, storageKey]);
 
   const value = useMemo(
     () => ({ favorites, isFavorite, toggleFavorite, removeFavorite }),

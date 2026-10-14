@@ -37,6 +37,7 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -75,9 +76,9 @@ const Signup = () => {
 
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
+    } else if (formData.password.length < 12) {
       newErrors.password =
-        "Password must contain at least 6 characters";
+        "Use at least 12 characters for a stronger password";
     }
 
     if (!formData.confirmPassword) {
@@ -87,7 +88,7 @@ const Signup = () => {
     }
 
     if (!formData.terms) {
-      newErrors.terms = "Please accept the terms and conditions";
+      newErrors.terms = "Please confirm account creation";
     }
 
     setErrors(newErrors);
@@ -95,32 +96,26 @@ const Signup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setIsLoading(true);
-
-    // Temporary signup until backend authentication is connected
-    setTimeout(() => {
-      const userData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        role: "user",
-      };
-
-      signup(userData);
-
-      setIsLoading(false);
+    setApiError("");
+    try {
+      await signup({
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+      });
       navigate("/");
-    }, 700);
-  };
-
-  const handleGoogleSignup = () => {
-    // Google authentication will be connected later
-    console.log("Google signup clicked");
+    } catch (error) {
+      setApiError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -163,7 +158,7 @@ const Signup = () => {
           <div className="signup-features">
             <div className="signup-feature">
               <ShieldCheck size={18} />
-              <span>Secure & Trusted</span>
+              <span>Server-side Sessions</span>
             </div>
 
             <div className="signup-feature">
@@ -307,6 +302,8 @@ const Signup = () => {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Create a password"
+                  minLength={12}
+                  maxLength={128}
                   value={formData.password}
                   onChange={handleChange}
                   autoComplete="new-password"
@@ -408,14 +405,7 @@ const Signup = () => {
                 <span className="signup-custom-checkbox"></span>
 
                 <span>
-                  I agree to the{" "}
-                  <a href="#terms">
-                    Terms & Conditions
-                  </a>{" "}
-                  and{" "}
-                  <a href="#privacy">
-                    Privacy Policy
-                  </a>
+                  I agree to create a CarRent account and understand that the service stores my account and booking details.
                 </span>
               </label>
 
@@ -453,11 +443,13 @@ const Signup = () => {
           <button
             type="button"
             className="signup-google-button"
-            onClick={handleGoogleSignup}
+            disabled
           >
             <span className="signup-google-icon">G</span>
-            <span>Continue with Google</span>
+            <span>Google sign-in is not configured</span>
           </button>
+
+          {apiError && <p className="signup-error-message" role="alert">{apiError}</p>}
 
           <p className="signup-login-text">
             Already have an account?{" "}
@@ -470,7 +462,7 @@ const Signup = () => {
           <div className="signup-security-note">
             <ShieldCheck size={15} />
             <span>
-              Your information is protected and secure.
+              Passwords are stored as salted, one-way hashes.
             </span>
           </div>
         </div>

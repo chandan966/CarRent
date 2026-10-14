@@ -31,6 +31,7 @@ const Login = () => {
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -67,43 +68,25 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setIsLoading(true);
-
-    setTimeout(() => {
-      const normalizedEmail = formData.email.trim().toLowerCase();
-      const isAdminLogin =
-        normalizedEmail === "admin@car-rental.com" &&
-        formData.password === "admin123";
-
-      const userData = {
-        email: normalizedEmail,
-        fullName: isAdminLogin
-          ? "CarRent Admin"
-          : formData.email.split("@")[0] || "CarRent User",
-        phone: isAdminLogin ? "9999999999" : "",
-        role: isAdminLogin ? "admin" : "user",
-      };
-
-      login(userData);
+    setApiError("");
+    try {
+      const user = await login({
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        remember: formData.remember,
+      });
+      navigate(user?.role === "admin" ? "/admin/cars" : "/");
+    } catch (error) {
+      setApiError(error.message);
+    } finally {
       setIsLoading(false);
-
-      if (isAdminLogin) {
-        navigate("/admin/cars");
-        return;
-      }
-
-      navigate("/");
-    }, 700);
-  };
-
-  const handleGoogleLogin = () => {
-    // Google authentication will be connected later
-    console.log("Google login clicked");
+    }
   };
 
   return (
@@ -148,7 +131,7 @@ const Login = () => {
           <div className="hero-features">
             <div className="hero-feature">
               <ShieldCheck size={18} />
-              <span>Secure & Trusted</span>
+              <span>Server-side Sessions</span>
             </div>
 
             <div className="hero-feature">
@@ -324,14 +307,12 @@ const Login = () => {
           </div>
 
           {/* Google */}
-          <button
-            type="button"
-            className="google-button"
-            onClick={handleGoogleLogin}
-          >
+          <button type="button" className="google-button" disabled>
             <span className="google-icon">G</span>
-            <span>Continue with Google</span>
+            <span>Google sign-in is not configured</span>
           </button>
+
+          {apiError && <p className="error-message" role="alert">{apiError}</p>}
 
           {/* Signup */}
           <p className="signup-text">
@@ -346,7 +327,7 @@ const Login = () => {
           <div className="security-note">
             <ShieldCheck size={15} />
             <span>
-              Your information is protected and secure.
+              Passwords are stored as salted, one-way hashes.
             </span>
           </div>
 

@@ -10,101 +10,10 @@ import {
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
+import { carsData } from "../../data/cars";
 
 import "./Cars.css";
 
-export const carsData = [
-  {
-    id: 1,
-    name: "BMW 3 Series",
-    brand: "BMW",
-    model: "3 Series",
-    year: 2024,
-    price: "₹45,00,000",
-    type: "Sedan",
-    fuel: "Petrol",
-    mileage: "15 km/l",
-    transmission: "Automatic",
-    location: "Mumbai",
-    image:
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 2,
-    name: "Mercedes-Benz C-Class",
-    brand: "Mercedes-Benz",
-    model: "C-Class",
-    year: 2024,
-    price: "₹58,00,000",
-    type: "Sedan",
-    fuel: "Petrol",
-    mileage: "14 km/l",
-    transmission: "Automatic",
-    location: "Mumbai",
-    image:
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 3,
-    name: "Toyota Fortuner",
-    brand: "Toyota",
-    model: "Fortuner",
-    year: 2024,
-    price: "₹42,00,000",
-    type: "SUV",
-    fuel: "Diesel",
-    mileage: "12 km/l",
-    transmission: "Automatic",
-    location: "Thane",
-    image:
-      "https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 4,
-    name: "Hyundai Creta",
-    brand: "Hyundai",
-    model: "Creta",
-    year: 2024,
-    price: "₹18,50,000",
-    type: "SUV",
-    fuel: "Petrol",
-    mileage: "17 km/l",
-    transmission: "Automatic",
-    location: "Navi Mumbai",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 5,
-    name: "Tata Harrier",
-    brand: "Tata",
-    model: "Harrier",
-    year: 2024,
-    price: "₹24,00,000",
-    type: "SUV",
-    fuel: "Diesel",
-    mileage: "16 km/l",
-    transmission: "Automatic",
-    location: "Mumbai",
-    image:
-      "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 6,
-    name: "Audi A4",
-    brand: "Audi",
-    model: "A4",
-    year: 2024,
-    price: "₹52,00,000",
-    type: "Sedan",
-    fuel: "Petrol",
-    mileage: "16 km/l",
-    transmission: "Automatic",
-    location: "Thane",
-    image:
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=900&q=80",
-  },
-];
 
 const Cars = () => {
   const navigate = useNavigate();

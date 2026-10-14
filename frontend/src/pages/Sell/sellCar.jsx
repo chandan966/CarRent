@@ -136,9 +136,10 @@ function SellCar() {
   const previewUrls = useRef(new Set());
 
   useEffect(() => {
+    const urls = previewUrls.current;
     return () => {
-      previewUrls.current.forEach((url) => URL.revokeObjectURL(url));
-      previewUrls.current.clear();
+      urls.forEach((url) => URL.revokeObjectURL(url));
+      urls.clear();
     };
   }, []);
 
