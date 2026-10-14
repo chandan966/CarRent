@@ -20,7 +20,7 @@ CarRent is a React and Vite demo for browsing cars for sale or rent, saving favo
 
 - React 19, Vite, React Router, and Lucide React build the frontend.
 - Vercel serverless handlers under `frontend/api` implement authentication and booking APIs.
-- PostgreSQL stores accounts, hashed sessions, rate-limit records, and booking requests.
+- MySQL stores accounts, hashed sessions, rate-limit records, and booking requests.
 - Node.js `scrypt` hashes passwords with a unique salt.
 - React Context provides the current server-verified account and account-specific favorites.
 
@@ -56,7 +56,7 @@ frontend/
    cp .env.example .env.local
    ```
 
-4. Set `DATABASE_URL` in `.env.local` to a PostgreSQL connection string with TLS enabled.
+4. Set `DATABASE_URL` in `.env.local` to your MySQL connection string. For a local MySQL Server, see `frontend/SECURITY_SETUP.md`.
 5. Start Vite:
 
    ```bash
@@ -95,7 +95,7 @@ npm audit         # Check installed package advisories
 Follow [frontend/SECURITY_SETUP.md](frontend/SECURITY_SETUP.md) for database setup, deployment environment variables, and trusted admin provisioning.
 
 - Signup always assigns the regular `user` role. The browser cannot grant admin access.
-- Passwords are hashed with `scrypt`; sessions use random tokens stored as hashes in PostgreSQL and `HttpOnly`, `SameSite=Lax` cookies.
+- Passwords are hashed with `scrypt`; sessions use random tokens stored as hashes in MySQL and `HttpOnly`, `SameSite=Lax` cookies.
 - Login and account creation are rate limited. Mutating requests require JSON and same-origin validation.
 - Purchase and rental request prices are recalculated on the server from the shared inventory; the client cannot submit an arbitrary amount.
 - Booking requests no longer collect or save government ID numbers, document photos, or full residential addresses.
@@ -104,12 +104,12 @@ Follow [frontend/SECURITY_SETUP.md](frontend/SECURITY_SETUP.md) for database set
 
 ## Production limitations
 
-This is still a marketplace prototype rather than a complete commercial transaction system. The frontend build can succeed without external credentials, but real authentication and booking requests require a managed PostgreSQL database. The Vercel API files are not automatically supported by a static-only host; another host needs equivalent server functions and environment-variable configuration.
+This is still a marketplace prototype rather than a complete commercial transaction system. The frontend build can succeed without external credentials, but real authentication and booking requests require a reachable MySQL database. The Vercel API files are not automatically supported by a static-only host; another host needs equivalent server functions and environment-variable configuration.
 
 - The car inventory is demo data in `frontend/src/data/cars.js`.
 - Car listing management, user management, payments, and several dashboard metrics are not backed by production APIs.
 - No payment provider is connected, so requests do not charge customers and invoices/receipts are unavailable.
-- Google sign-in and password reset are unavailable until OAuth and an email provider are configured.
+- Google sign-in is available after configuring the Google OAuth credentials described in `frontend/SECURITY_SETUP.md`; password reset still needs an email provider and a reset flow.
 - Email addresses are not verified yet. Add a verification flow and published privacy/terms documents before inviting real customers.
 - Seller listing data and photos are still local to the browser and are not visible to other users.
 - Favorites are stored per account in the current browser and do not sync between devices.

@@ -18,6 +18,16 @@ import {
 
 import "./Signup.css";
 
+const googleAuthErrors = {
+  google_not_configured: "Google sign-in is not configured yet. Add the Google OAuth settings to .env.local.",
+  google_config_invalid: "The Google callback URL is not configured correctly.",
+  google_cancelled: "Google sign-in was cancelled. You can try again.",
+  google_invalid_state: "This sign-in request expired or could not be verified. Please try again.",
+  google_email_unverified: "Google sign-in requires a verified Google email address.",
+  google_account_conflict: "This account is already linked to a different Google account. Sign in with your existing method.",
+  google_failed: "Google sign-in could not be completed. Please try again.",
+};
+
 const Signup = () => {
   const navigate = useNavigate();
 
@@ -37,7 +47,10 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState("");
+  const [apiError, setApiError] = useState(() => {
+    const code = new URLSearchParams(window.location.search).get("oauthError");
+    return googleAuthErrors[code] || "";
+  });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -443,10 +456,11 @@ const Signup = () => {
           <button
             type="button"
             className="signup-google-button"
-            disabled
+            disabled={isLoading}
+            onClick={() => window.location.assign("/api/auth/google?screen=signup")}
           >
             <span className="signup-google-icon">G</span>
-            <span>Google sign-in is not configured</span>
+            <span>Continue with Google</span>
           </button>
 
           {apiError && <p className="signup-error-message" role="alert">{apiError}</p>}
