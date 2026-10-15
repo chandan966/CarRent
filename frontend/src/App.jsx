@@ -43,7 +43,7 @@ import MyBookings from "./pages/Profile/MyBookings";
 
 // Route Protection
 import ProtectedRoute from "./routes/ProtectedRoute";
-import AdmiRoute from "./routes/AdmiRoute";
+import AdminRoute from "./routes/AdminRoute";
 
 // Admin
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -280,54 +280,54 @@ function App() {
         <Route
           path="/admin"
           element={
-            <AdmiRoute>
+            <AdminRoute>
               <AdminDashboard />
-            </AdmiRoute>
+            </AdminRoute>
           }
         />
 
         <Route
           path="/admin/dashboard"
           element={
-            <AdmiRoute>
+            <AdminRoute>
               <AdminDashboard />
-            </AdmiRoute>
+            </AdminRoute>
           }
         />
 
         <Route
           path="/admin/cars"
           element={
-            <AdmiRoute>
+            <AdminRoute>
               <AdminCars />
-            </AdmiRoute>
+            </AdminRoute>
           }
         />
 
         <Route
           path="/admin/bookings"
           element={
-            <AdmiRoute>
+            <AdminRoute>
               <AdminBookings />
-            </AdmiRoute>
+            </AdminRoute>
           }
         />
 
         <Route
           path="/admin/users"
           element={
-            <AdmiRoute>
+            <AdminRoute>
               <AdminUsers />
-            </AdmiRoute>
+            </AdminRoute>
           }
         />
 
         <Route
           path="/admin/payments"
           element={
-            <AdmiRoute>
+            <AdminRoute>
               <AdminPayments />
-            </AdmiRoute>
+            </AdminRoute>
           }
         />
 

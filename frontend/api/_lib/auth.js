@@ -620,6 +620,23 @@ function validateProfile(input) {
   return { fullName, phone, location };
 }
 
+function localAuthErrorMessage(error) {
+  const code = String(error?.code || "");
+  const localMessages = {
+    ECONNREFUSED: "MySQL refused the connection. Start the MySQL server and confirm it uses port 3306.",
+    ETIMEDOUT: "Connecting to MySQL timed out. Check that the server is running and DATABASE_URL is correct.",
+    EHOSTUNREACH: "The MySQL host could not be reached. Check DATABASE_URL.",
+    ER_ACCESS_DENIED_ERROR: "MySQL rejected the configured username or password, or that user cannot access the carrent database.",
+    ER_BAD_DB_ERROR: "The carrent database was not found. Create it in MySQL first.",
+    ER_DBACCESS_DENIED_ERROR: "The MySQL user needs access to the carrent database.",
+    ER_TABLEACCESS_DENIED_ERROR: "The MySQL user needs permission to create and alter CarRent tables.",
+    ER_PARSE_ERROR: "MySQL rejected a query. Check the MySQL server version and the API query shown in the terminal.",
+  };
+  if (localMessages[code]) return localMessages[code];
+  if (/^[A-Z0-9_]{1,64}$/.test(code)) return `Local authentication database error: ${code}.`;
+  return "Authentication service is temporarily unavailable. Check the Vite terminal for the database error code.";
+}
+
 export async function handleAuthRequest(request, response) {
   const action = requestAction(request);
   const method = String(request.method || "GET").toUpperCase();
@@ -787,6 +804,11 @@ export async function handleAuthRequest(request, response) {
     const status = error.statusCode || 500;
     if (status === 503) return json(response, status, { error: "Authentication is not configured. Add DATABASE_URL to the deployment environment." });
     console.error("CarRent authentication request failed:", error.code || "request error");
-    return json(response, status, { error: status === 413 ? error.message : "Authentication service is temporarily unavailable." });
+    const message = status === 413
+      ? error.message
+      : process.env.NODE_ENV === "production"
+        ? "Authentication service is temporarily unavailable."
+        : localAuthErrorMessage(error);
+    return json(response, status, { error: message });
   }
 }
