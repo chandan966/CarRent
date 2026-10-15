@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -14,7 +14,7 @@ import {
 import Navbar from "../../components/Navbar/Navbar";
 import ContactSeller from "./ContactSeller";
 import { useFavorites } from "../../hooks/useFavorites";
-import { buyCars as cars } from "../../data/cars";
+import { useCars } from "../../context/CarsContext";
 import "./BuyDetails.css";
 
 
@@ -22,8 +22,10 @@ function BuyDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const car = cars.find((item) => item.id === Number(id));
+  const { buyCars: cars } = useCars();
+  const car = cars.find((item) => String(item.id) === id);
   const [selectedSellerCar, setSelectedSellerCar] = useState(null);
+  const closeSellerContact = useCallback(() => setSelectedSellerCar(null), [setSelectedSellerCar]);
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(car, "buy");
 
@@ -200,7 +202,7 @@ function BuyDetails() {
 
       <ContactSeller
         car={selectedSellerCar}
-        onClose={() => setSelectedSellerCar(null)}
+        onClose={closeSellerContact}
       />
     </>
   );

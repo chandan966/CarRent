@@ -102,6 +102,17 @@
   border-radius: 14px;
 }
 
+.notifications-toolbar-actions,
+.notification-actions { display: flex; align-items: center; gap: 10px; }
+.notifications-refresh-button,
+.notification-mark-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 0 9px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; color: #475569; cursor: pointer; }
+.notifications-refresh-button:disabled,
+.notification-mark-button:disabled { opacity: .55; cursor: wait; }
+.notification-mark-button { color: #0369a1; font-size: 12px; font-weight: 650; white-space: nowrap; }
+.notification-open-link { display: inline-flex; margin-top: 9px; padding: 0; border: 0; background: transparent; color: #0284c7; font-size: 12px; font-weight: 700; cursor: pointer; }
+.notifications-error { margin: 0 0 16px; padding: 13px 15px; border: 1px solid #fecaca; border-radius: 10px; background: #fef2f2; color: #991b1b; }
+.notifications-loading { padding: 26px; color: #64748b; text-align: center; }
+
 .notifications-count {
   display: flex;
   align-items: center;
@@ -355,6 +366,10 @@
   .notifications-toolbar {
     padding: 13px 14px;
   }
+
+  .notifications-toolbar-actions { gap: 6px; }
+  .mark-read-button { font-size: 12px; }
+  .notification-actions { flex-direction: column-reverse; }
 
   .notification-card {
     gap: 13px;

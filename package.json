@@ -2,9 +2,12 @@
   "name": "car-rental",
   "private": true,
   "scripts": {
-    "dev": "npm --prefix frontend run dev -- --host",
+    "dev": "node scripts/dev.js",
+    "dev:backend": "npm --prefix Backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev -- --host",
     "build": "npm --prefix frontend run build",
-    "preview": "npm --prefix frontend run preview -- --host"
+    "preview": "node scripts/dev.js --preview",
+    "lint": "npm --prefix frontend run lint"
   },
   "dependencies": {
     "lucide-react": "^1.45.0"

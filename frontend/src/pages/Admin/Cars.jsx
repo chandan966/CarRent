@@ -1,347 +1,133 @@
-import { useMemo, useState } from "react";
-import {
-  Plus,
-  Search,
-  Pencil,
-  Trash2,
-  CarFront,
-  CheckCircle,
-  Clock3,
-  CircleDollarSign,
-} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { CarFront, CheckCircle, Clock3, RefreshCw, Search, Trash2, XCircle } from "lucide-react";
+import { deleteCarListing, getAdminCars, setCarListingStatus } from "../../Services/carservices";
+import { useCars } from "../../context/CarsContext";
 import "./Cars.css";
 
-const initialCars = [
-  {
-    id: 1,
-    name: "BMW 3 Series",
-    year: 2023,
-    price: "₹52,00,000",
-    type: "Buy",
-    status: "Available",
-  },
-  {
-    id: 2,
-    name: "Mercedes-Benz C-Class",
-    year: 2022,
-    price: "₹58,00,000",
-    type: "Buy",
-    status: "Sold",
-  },
-  {
-    id: 3,
-    name: "Toyota Fortuner",
-    year: 2024,
-    price: "₹3,500/day",
-    type: "Rent",
-    status: "Rented",
-  },
-  {
-    id: 4,
-    name: "Hyundai Creta",
-    year: 2023,
-    price: "₹2,200/day",
-    type: "Rent",
-    status: "Available",
-  },
-  {
-    id: 5,
-    name: "Tata Harrier",
-    year: 2022,
-    price: "₹24,00,000",
-    type: "Buy",
-    status: "Available",
-  },
-];
-
-function Cars() {
-  const [cars, setCars] = useState(initialCars);
+function AdminCars() {
+  const { refresh: refreshPublicCars } = useCars();
+  const [cars, setCars] = useState([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
+  const [isLoading, setIsLoading] = useState(true);
+  const [pendingId, setPendingId] = useState("");
+  const [error, setError] = useState("");
 
-  const filteredCars = useMemo(() => {
-    return cars.filter((car) => {
-      const matchesSearch = car.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+  const loadCars = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      setCars(await getAdminCars());
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-      const matchesStatus =
-        statusFilter === "All" || car.status === statusFilter;
+  useEffect(() => { loadCars(); }, [loadCars]);
 
-      return matchesSearch && matchesStatus;
-    });
-  }, [cars, search, statusFilter]);
+  const filteredCars = useMemo(() => cars.filter((car) => {
+    const matchesSearch = `${car.name} ${car.brand} ${car.id}`.toLowerCase().includes(search.trim().toLowerCase());
+    return matchesSearch && (typeFilter === "All" || car.listingType === typeFilter.toLowerCase());
+  }), [cars, search, typeFilter]);
 
-  const availableCars = cars.filter(
-    (car) => car.status === "Available"
-  ).length;
-
-  const rentedCars = cars.filter(
-    (car) => car.status === "Rented"
-  ).length;
-
-  const soldCars = cars.filter(
-    (car) => car.status === "Sold"
-  ).length;
-
-  const handleDelete = (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this car?"
-    );
-
-    if (!confirmed) return;
-
-    setCars((currentCars) =>
-      currentCars.filter((car) => car.id !== id)
-    );
+  const updateStatus = async (car, status) => {
+    setPendingId(`${car.listingType}:${car.id}`);
+    setError("");
+    try {
+      await setCarListingStatus(car, status);
+      setCars((current) => current.map((item) => item.id === car.id && item.listingType === car.listingType ? { ...item, status } : item));
+      await refreshPublicCars();
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setPendingId("");
+    }
   };
 
-  const handleEdit = (car) => {
-    window.alert(`Edit functionality for ${car.name} will be connected later.`);
+  const removeCar = async (car) => {
+    if (!window.confirm(`Delete the listing “${car.name}”? This cannot be undone.`)) return;
+    setPendingId(`${car.listingType}:${car.id}`);
+    setError("");
+    try {
+      await deleteCarListing(car);
+      setCars((current) => current.filter((item) => item.id !== car.id || item.listingType !== car.listingType));
+      await refreshPublicCars();
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setPendingId("");
+    }
   };
 
-  const handleAddCar = () => {
-    window.alert("Add Car form will be connected next.");
+  const counts = {
+    all: cars.length,
+    buy: cars.filter((car) => car.listingType === "buy").length,
+    rent: cars.filter((car) => car.listingType === "rent").length,
+    pending: cars.filter((car) => car.status === "pending").length,
   };
 
   return (
     <div className="admin-cars-page">
-
-      {/* HEADER */}
-
-      <div className="admin-cars-header">
+      <header className="admin-cars-header">
         <div>
           <span className="admin-cars-label">ADMIN PANEL</span>
-
           <h1>Car Management</h1>
-
-          <p>
-            Manage all cars listed for buying and renting.
-          </p>
+          <p>Review seller submissions and manage public inventory.</p>
         </div>
-
-        <button
-          className="admin-add-car-btn"
-          onClick={handleAddCar}
-        >
-          <Plus size={19} />
-          Add Car
+        <button className="admin-add-car-btn" type="button" onClick={loadCars} disabled={isLoading}>
+          <RefreshCw size={18} aria-hidden="true" /> Refresh inventory
         </button>
-      </div>
+      </header>
 
+      <p className="admin-inventory-notice" role="note">
+        New seller cars stay private until an administrator approves them. Publishing a listing makes it visible to customers.
+      </p>
+      {error && <p className="admin-inventory-error" role="alert">{error}</p>}
 
-      {/* STATISTICS */}
-
-      <div className="admin-cars-stats">
-
-        <div className="admin-car-stat-card">
-          <div className="admin-stat-icon">
-            <CarFront size={22} />
-          </div>
-
-          <div>
-            <span>Total Cars</span>
-            <strong>{cars.length}</strong>
-          </div>
-        </div>
-
-
-        <div className="admin-car-stat-card">
-          <div className="admin-stat-icon">
-            <CheckCircle size={22} />
-          </div>
-
-          <div>
-            <span>Available</span>
-            <strong>{availableCars}</strong>
-          </div>
-        </div>
-
-
-        <div className="admin-car-stat-card">
-          <div className="admin-stat-icon">
-            <Clock3 size={22} />
-          </div>
-
-          <div>
-            <span>Rented</span>
-            <strong>{rentedCars}</strong>
-          </div>
-        </div>
-
-
-        <div className="admin-car-stat-card">
-          <div className="admin-stat-icon">
-            <CircleDollarSign size={22} />
-          </div>
-
-          <div>
-            <span>Sold</span>
-            <strong>{soldCars}</strong>
-          </div>
-        </div>
-
-      </div>
-
-
-      {/* FILTER BAR */}
+      <section className="admin-cars-stats" aria-label="Inventory totals">
+        <article className="admin-car-stat-card"><div className="admin-stat-icon"><CarFront size={22} /></div><div><span>Total Listings</span><strong>{counts.all}</strong></div></article>
+        <article className="admin-car-stat-card"><div className="admin-stat-icon"><CheckCircle size={22} /></div><div><span>For Sale</span><strong>{counts.buy}</strong></div></article>
+        <article className="admin-car-stat-card"><div className="admin-stat-icon"><CarFront size={22} /></div><div><span>For Rent</span><strong>{counts.rent}</strong></div></article>
+        <article className="admin-car-stat-card"><div className="admin-stat-icon"><Clock3 size={22} /></div><div><span>Needs Review</span><strong>{counts.pending}</strong></div></article>
+      </section>
 
       <div className="admin-cars-toolbar">
-
-        <div className="admin-car-search">
-          <Search size={19} />
-
-          <input
-            type="text"
-            placeholder="Search cars..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-
-        <select
-          className="admin-car-filter"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="All">All Status</option>
-          <option value="Available">Available</option>
-          <option value="Rented">Rented</option>
-          <option value="Sold">Sold</option>
+        <label className="admin-car-search"><Search size={19} aria-hidden="true" /><span className="sr-only">Search car listings</span><input type="search" placeholder="Search cars…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+        <select className="admin-car-filter" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)} aria-label="Filter listing type">
+          <option value="All">All listing types</option><option value="Buy">For sale</option><option value="Rent">For rent</option>
         </select>
-
       </div>
 
-
-      {/* CAR TABLE */}
-
-      <div className="admin-cars-table-card">
-
-        <div className="admin-table-heading">
-          <div>
-            <h2>All Cars</h2>
-            <p>{filteredCars.length} cars found</p>
-          </div>
-        </div>
-
-
+      <section className="admin-cars-table-card">
+        <div className="admin-table-heading"><div><h2>Inventory</h2><p>{filteredCars.length} listing{filteredCars.length === 1 ? "" : "s"}</p></div></div>
         <div className="admin-cars-table-wrapper">
-
           <table className="admin-cars-table">
-
-            <thead>
-              <tr>
-                <th>Car</th>
-                <th>Year</th>
-                <th>Type</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-
+            <thead><tr><th>Car</th><th>Year</th><th>Listing</th><th>Price</th><th>Status</th><th>Review actions</th></tr></thead>
             <tbody>
-
-              {filteredCars.length > 0 ? (
-                filteredCars.map((car) => (
-
-                  <tr key={car.id}>
-
-                    <td>
-                      <div className="admin-car-name">
-                        <div className="admin-car-image-placeholder">
-                          <CarFront size={22} />
-                        </div>
-
-                        <div>
-                          <strong>{car.name}</strong>
-                          <span>ID #{car.id}</span>
-                        </div>
-                      </div>
-                    </td>
-
-
-                    <td>{car.year}</td>
-
-
-                    <td>
-                      <span className="admin-car-type">
-                        {car.type}
-                      </span>
-                    </td>
-
-
-                    <td>
-                      <strong className="admin-car-price">
-                        {car.price}
-                      </strong>
-                    </td>
-
-
-                    <td>
-                      <span
-                        className={`admin-car-status ${car.status
-                          .toLowerCase()
-                          .replace(" ", "-")}`}
-                      >
-                        {car.status}
-                      </span>
-                    </td>
-
-
-                    <td>
-
-                      <div className="admin-car-actions">
-
-                        <button
-                          className="admin-action-edit"
-                          onClick={() => handleEdit(car)}
-                          title="Edit car"
-                        >
-                          <Pencil size={17} />
-                        </button>
-
-
-                        <button
-                          className="admin-action-delete"
-                          onClick={() => handleDelete(car.id)}
-                          title="Delete car"
-                        >
-                          <Trash2 size={17} />
-                        </button>
-
-                      </div>
-
-                    </td>
-
+              {isLoading ? <tr><td className="admin-no-cars" colSpan="6">Loading inventory…</td></tr> : filteredCars.length ? filteredCars.map((car) => {
+                const key = `${car.listingType}:${car.id}`;
+                return (
+                  <tr key={key}>
+                    <td><div className="admin-car-name"><img className="admin-car-image-placeholder" src={car.image} alt="" loading="lazy" /><div><strong>{car.name}</strong><span>{car.id}</span></div></div></td>
+                    <td>{car.year}</td><td><span className="admin-car-type">{car.listingType === "rent" ? "Rent" : "Buy"}</span></td>
+                    <td><strong className="admin-car-price">{car.priceLabel}</strong></td>
+                    <td><span className={`admin-car-status ${car.status}`}>{car.status}</span></td>
+                    <td><div className="admin-car-actions">
+                      {car.status !== "active" && <button type="button" className="admin-action-approve" disabled={pendingId === key} onClick={() => updateStatus(car, "active")}><CheckCircle size={15} /> Publish</button>}
+                      {car.status !== "rejected" && <button type="button" className="admin-action-reject" disabled={pendingId === key} onClick={() => updateStatus(car, "rejected")}><XCircle size={15} /> Reject</button>}
+                      <button type="button" className="admin-action-delete" aria-label={`Delete ${car.name}`} title="Delete listing" disabled={pendingId === key} onClick={() => removeCar(car)}><Trash2 size={15} /></button>
+                    </div></td>
                   </tr>
-
-                ))
-              ) : (
-
-                <tr>
-                  <td
-                    colSpan="6"
-                    className="admin-no-cars"
-                  >
-                    No cars found.
-                  </td>
-                </tr>
-
-              )}
-
+                );
+              }) : <tr><td className="admin-no-cars" colSpan="6">{error ? "Could not load listings." : "No car listings found."}</td></tr>}
             </tbody>
-
           </table>
-
         </div>
-
-      </div>
-
+      </section>
     </div>
   );
 }
 
-export default Cars;
+export default AdminCars;

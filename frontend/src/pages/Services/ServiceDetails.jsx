@@ -215,13 +215,10 @@ function ServiceDetails() {
 
             <button
               className="service-details-book"
-              onClick={() =>
-                navigate(
-                  `/booking?service=${service.id}&type=service`
-                )
-              }
+              type="button"
+              onClick={() => navigate(`/service-request/${service.id}`)}
             >
-              Book This Service
+              Request This Service
             </button>
 
           </section>

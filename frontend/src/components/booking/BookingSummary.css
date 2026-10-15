@@ -1,0 +1,58 @@
+.booking-summary {
+  overflow: hidden;
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 18px 42px rgb(15 23 42 / 8%);
+}
+
+.booking-summary h2 {
+  margin: 0 0 24px;
+  color: #0f172a;
+  font-size: 20px;
+  letter-spacing: -.03em;
+}
+
+.booking-summary-car {
+  margin: 0;
+  color: #14212b;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.booking-summary-type {
+  margin: 5px 0 19px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.booking-summary-total {
+  display: block;
+  padding-top: 17px;
+  border-top: 1px solid #e8edf2;
+  color: #075d72;
+  font-size: clamp(21px, 3vw, 27px);
+  line-height: 1.25;
+}
+
+.booking-summary-breakdown,
+.booking-summary-date {
+  margin: 12px 0 0;
+  color: #475569;
+  font-size: 13px;
+}
+
+.booking-summary-note {
+  margin: 22px 0 0;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: #f1f7f8;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .booking-summary { border-radius: 18px; }
+}

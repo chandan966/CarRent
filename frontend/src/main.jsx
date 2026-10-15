@@ -6,13 +6,16 @@ import App from "./App.jsx";
 
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { FavoritesProvider } from "./hooks/useFavorites.jsx";
+import { CarsProvider } from "./context/CarsContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <FavoritesProvider>
-        <App />
-      </FavoritesProvider>
+      <CarsProvider>
+        <FavoritesProvider>
+          <App />
+        </FavoritesProvider>
+      </CarsProvider>
     </AuthProvider>
   </StrictMode>
 );  

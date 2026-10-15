@@ -97,6 +97,11 @@ export async function ensureSchema(sql) {
       if (passwordColumn?.isNullable === "NO") {
         await sql`ALTER TABLE carrent_users MODIFY COLUMN password_hash varchar(255) NULL`;
       }
+      const [activeColumn] = await sql`
+        SELECT COLUMN_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'carrent_users' AND COLUMN_NAME = 'is_active'
+      `;
+      if (!activeColumn) await sql`ALTER TABLE carrent_users ADD COLUMN is_active boolean NOT NULL DEFAULT TRUE`;
       await sql`CREATE TABLE IF NOT EXISTS carrent_google_identities (
         google_sub varchar(255) PRIMARY KEY,
         user_id varchar(64) NOT NULL UNIQUE,
@@ -134,6 +139,13 @@ export async function ensureSchema(sql) {
         CONSTRAINT carrent_bookings_user_fk FOREIGN KEY (user_id)
           REFERENCES carrent_users(id) ON DELETE CASCADE
       )`;
+      const [bookingCarIdColumn] = await sql`
+        SELECT DATA_TYPE AS dataType FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'carrent_bookings' AND COLUMN_NAME = 'car_id'
+      `;
+      if (bookingCarIdColumn && bookingCarIdColumn.dataType !== "varchar") {
+        await sql`ALTER TABLE carrent_bookings MODIFY COLUMN car_id varchar(64) NOT NULL`;
+      }
       await sql`CREATE TABLE IF NOT EXISTS carrent_auth_limits (
         fingerprint char(64) PRIMARY KEY,
         attempts integer NOT NULL,
@@ -587,6 +599,29 @@ async function recordFailure(sql, fingerprint, maxAttempts, windowMinutes) {
   `;
 }
 
+async function recordAttempt(sql, fingerprint, maxAttempts, windowMinutes) {
+  await sql`
+    INSERT INTO carrent_auth_limits (fingerprint, attempts, window_started_at, blocked_until)
+    VALUES (${fingerprint}, 1, CURRENT_TIMESTAMP, NULL)
+    ON DUPLICATE KEY UPDATE
+      blocked_until = IF(
+        window_started_at < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL ${windowMinutes} MINUTE),
+        NULL,
+        IF(attempts + 1 >= ${maxAttempts}, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL ${windowMinutes} MINUTE), blocked_until)
+      ),
+      attempts = IF(
+        window_started_at < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL ${windowMinutes} MINUTE),
+        1,
+        attempts + 1
+      ),
+      window_started_at = IF(
+        window_started_at < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL ${windowMinutes} MINUTE),
+        CURRENT_TIMESTAMP,
+        window_started_at
+      )
+  `;
+}
+
 async function createSession(sql, userId, response, remember = false) {
   const ttlSeconds = remember ? SESSION_TTL_SECONDS : 60 * 60 * 12;
   const rawToken = randomBytes(32).toString("base64url");
@@ -605,7 +640,7 @@ export async function authenticatedUser(sql, request) {
     SELECT u.id, u.full_name AS fullName, u.email, u.phone, u.location, u.role
     FROM carrent_sessions s
     JOIN carrent_users u ON u.id = s.user_id
-    WHERE s.token_hash = ${hashToken(token)} AND s.expires_at > now()
+    WHERE s.token_hash = ${hashToken(token)} AND s.expires_at > now() AND u.is_active = TRUE
   `;
   return user || null;
 }
@@ -634,7 +669,7 @@ function localAuthErrorMessage(error) {
   };
   if (localMessages[code]) return localMessages[code];
   if (/^[A-Z0-9_]{1,64}$/.test(code)) return `Local authentication database error: ${code}.`;
-  return "Authentication service is temporarily unavailable. Check the Vite terminal for the database error code.";
+  return "Authentication service is temporarily unavailable. Check the backend terminal for the database error code.";
 }
 
 export async function handleAuthRequest(request, response) {
@@ -729,8 +764,8 @@ export async function handleAuthRequest(request, response) {
     }
 
     if (action === "signup") {
-      await recordFailure(sql, fingerprint, 10, 60);
-      await recordFailure(sql, ipFingerprint, 10, 60);
+      await recordAttempt(sql, fingerprint, 5, 60);
+      await recordAttempt(sql, ipFingerprint, 20, 60);
       if (await isBlocked(sql, fingerprint) || await isBlocked(sql, ipFingerprint)) {
         return json(response, 429, { error: "Too many account attempts. Please wait before trying again." });
       }
@@ -769,7 +804,7 @@ export async function handleAuthRequest(request, response) {
       return json(response, 401, { error: "Email or password is incorrect." });
     }
     const [record] = await sql`
-      SELECT id, full_name AS fullName, email, phone, location, role, password_hash
+      SELECT id, full_name AS fullName, email, phone, location, role, password_hash, is_active AS isActive
       FROM carrent_users WHERE email = ${email}
     `;
     let valid = false;
@@ -783,7 +818,7 @@ export async function handleAuthRequest(request, response) {
         maxmem: 128 * 1024 * 1024,
       });
     }
-    if (!record || !valid) {
+    if (!record || !valid || !record.isActive) {
       await recordFailure(sql, fingerprint, 5, 15);
       await recordFailure(sql, ipFingerprint, 5, 15);
       return json(response, 401, { error: "Email or password is incorrect." });
@@ -802,7 +837,12 @@ export async function handleAuthRequest(request, response) {
     return json(response, 200, { user });
   } catch (error) {
     const status = error.statusCode || 500;
-    if (status === 503) return json(response, status, { error: "Authentication is not configured. Add DATABASE_URL to the deployment environment." });
+    if (status === 503) {
+      const setupLocation = process.env.NODE_ENV === "production"
+        ? "the backend deployment environment"
+        : "Backend/.env.local, then restart the backend";
+      return json(response, status, { error: `Authentication is not configured. Add DATABASE_URL to ${setupLocation}.` });
+    }
     console.error("CarRent authentication request failed:", error.code || "request error");
     const message = status === 413
       ? error.message

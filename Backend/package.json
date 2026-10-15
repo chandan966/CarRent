@@ -1,0 +1,13 @@
+{
+  "name": "carrent-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.3.0",
+    "mysql2": "^3.24.6"
+  }
+}

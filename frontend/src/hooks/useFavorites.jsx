@@ -1,26 +1,15 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
 import { useAuth } from "../context/useAuth";
+import { FavoritesContext } from "../context/FavoritesContext";
+import { getFavoriteKey } from "../utils/favorites";
+import { deleteAccountFavorite, getAccountFavorites, saveAccountFavorite } from "../Services/favoriteServices";
 
 const FAVORITES_STORAGE_KEY = "favoriteCars";
-const FavoritesContext = createContext(null);
-
-export function getFavoriteKey(car, category = car?.category || "buy") {
-  const carName =
-    car?.name || [car?.brand, car?.model].filter(Boolean).join(" ") || car?.id;
-  const normalizedName = String(carName || "unknown")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-
-  return `${category}:${normalizedName}`;
-}
 
 function readFavoriteCars(storageKey) {
   if (typeof window === "undefined") return [];
@@ -82,6 +71,25 @@ export function FavoritesProvider({ children }) {
     : storedFavorites;
 
   useEffect(() => {
+    let active = true;
+    if (user?.id) {
+      const localFavorites = readFavoriteCars(storageKey);
+      getAccountFavorites()
+        .then(async (remoteFavorites) => {
+          if (!active) return;
+          if (remoteFavorites.length === 0 && localFavorites.length > 0) {
+            await Promise.all(localFavorites.map((car) => saveAccountFavorite(car, car.category)));
+            if (!active) return;
+            setFavoritesState({ key: storageKey, items: localFavorites });
+          } else {
+            setFavoritesState({ key: storageKey, items: remoteFavorites });
+            window.localStorage.setItem(storageKey, JSON.stringify(remoteFavorites));
+          }
+        })
+        .catch(() => {
+          if (active) setFavoritesState({ key: storageKey, items: localFavorites });
+        });
+    }
     const syncFavoritesFromAnotherTab = (event) => {
       if (event.key === storageKey || event.key === null) {
         setFavoritesState({ key: storageKey, items: readFavoriteCars(storageKey) });
@@ -89,9 +97,11 @@ export function FavoritesProvider({ children }) {
     };
 
     window.addEventListener("storage", syncFavoritesFromAnotherTab);
-    return () =>
+    return () => {
+      active = false;
       window.removeEventListener("storage", syncFavoritesFromAnotherTab);
-  }, [storageKey]);
+    };
+  }, [storageKey, user?.id]);
 
   const isFavorite = useCallback((car, category = car?.category || "buy") => {
     if (!car) return false;
@@ -127,7 +137,13 @@ export function FavoritesProvider({ children }) {
     } catch (error) {
       console.error("Error saving favorites:", error);
     }
-  }, [favorites, storageKey]);
+    if (user?.id) {
+      const request = isSaved
+        ? deleteAccountFavorite(favoriteKey)
+        : saveAccountFavorite({ ...car, category, favoriteKey }, category);
+      request.catch((error) => console.error("Could not sync favorite with the account:", error));
+    }
+  }, [favorites, storageKey, user?.id]);
 
   const removeFavorite = useCallback((car) => {
     if (!car) return;
@@ -146,7 +162,8 @@ export function FavoritesProvider({ children }) {
     } catch (error) {
       console.error("Error saving favorites:", error);
     }
-  }, [favorites, storageKey]);
+    if (user?.id) deleteAccountFavorite(favoriteKey).catch((error) => console.error("Could not sync favorite with the account:", error));
+  }, [favorites, storageKey, user?.id]);
 
   const value = useMemo(
     () => ({ favorites, isFavorite, toggleFavorite, removeFavorite }),
@@ -158,12 +175,4 @@ export function FavoritesProvider({ children }) {
       {children}
     </FavoritesContext.Provider>
   );
-}
-
-export function useFavorites() {
-  const context = useContext(FavoritesContext);
-  if (!context) {
-    throw new Error("useFavorites must be used inside FavoritesProvider");
-  }
-  return context;
 }

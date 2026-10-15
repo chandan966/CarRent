@@ -89,6 +89,17 @@
   color: #0284c7;
 }
 
+.admin-dashboard-notice {
+  margin: -8px 0 22px;
+  padding: 13px 16px;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .admin-header h1 {
   margin: 0;
   font-size: 2rem;

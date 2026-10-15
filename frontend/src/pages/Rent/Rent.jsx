@@ -14,13 +14,14 @@ import {
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
-import { rentalCars } from "../../data/cars";
+import { useCars } from "../../context/CarsContext";
 import "./Rent.css";
 
 
 const Rent = () => {
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { rentalCars } = useCars();
 
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
@@ -103,6 +104,7 @@ const Rent = () => {
     fuel,
     location,
     sort,
+    rentalCars,
   ]);
 
   const clearFilters = () => {
@@ -183,9 +185,12 @@ const Rent = () => {
             className={`rent-filter-button ${
               filtersOpen ? "active" : ""
             }`}
+            type="button"
             onClick={() =>
               setFiltersOpen(!filtersOpen)
             }
+            aria-expanded={filtersOpen}
+            aria-controls="rent-filter-row"
           >
             <SlidersHorizontal size={18} />
             Filters
@@ -193,6 +198,7 @@ const Rent = () => {
 
           <button
             className="rent-search-button"
+            type="button"
             onClick={() => {
               document
                 .querySelector(".rent-listings")
@@ -247,6 +253,7 @@ const Rent = () => {
 
         {/* FILTERS */}
         <div
+          id="rent-filter-row"
           className={`rent-filter-row ${
             filtersOpen ? "mobile-filter-open" : ""
           }`}

@@ -238,6 +238,7 @@
   border-radius: 10px;
   background: #e0f2fe;
   color: #0284c7;
+  object-fit: cover;
 }
 
 .admin-car-name strong {
@@ -298,6 +299,10 @@
   color: #991b1b;
 }
 
+.admin-car-status.active { background: #dcfce7; color: #166534; }
+.admin-car-status.pending { background: #fef3c7; color: #92400e; text-transform: capitalize; }
+.admin-car-status.rejected { background: #fee2e2; color: #991b1b; text-transform: capitalize; }
+
 
 /* ACTIONS */
 
@@ -319,6 +324,23 @@
   cursor: pointer;
   transition: 0.2s ease;
 }
+
+.admin-car-actions button.admin-action-approve,
+.admin-car-actions button.admin-action-reject {
+  width: auto;
+  min-height: 34px;
+  padding: 0 9px;
+  gap: 5px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-car-actions button:disabled { cursor: wait; opacity: .55; }
+.admin-action-approve { color: #166534; }
+.admin-action-approve:hover { background: #dcfce7; border-color: #86efac; }
+.admin-action-reject { color: #b91c1c; }
+.admin-action-reject:hover { background: #fee2e2; border-color: #fecaca; }
 
 .admin-action-edit {
   color: #0284c7;
@@ -393,4 +415,21 @@
   .admin-cars-stats {
     grid-template-columns: 1fr;
   }
+}
+.admin-inventory-notice {
+  margin: 18px 0;
+  padding: 13px 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.admin-inventory-error { margin: 14px 0; padding: 12px 14px; border-radius: 10px; background: #fef2f2; color: #991b1b; }
+
+.admin-actions-pending {
+  color: #64748b;
+  font-size: 11px;
 }

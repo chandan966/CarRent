@@ -1,147 +1,199 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-  Search,
-  Heart,
-  Bell,
-  User,
   ArrowLeft,
+  Bell,
   CarFront,
+  Heart,
   Menu,
+  Search,
+  User,
   X,
 } from "lucide-react";
-import { useState } from "react";
 import { useAuth } from "../../context/useAuth";
 import "./Navbar.css";
 
-const Navbar = () => {
+const navigation = [
+  { label: "Home", to: "/", end: true },
+  { label: "Buy", to: "/buy" },
+  { label: "Rent", to: "/rent" },
+  { label: "Sell", to: "/sell" },
+  { label: "Services", to: "/services" },
+  { label: "Cars", to: "/cars" },
+];
+
+function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  const [searchLocationKey, setSearchLocationKey] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [menuLocationKey, setMenuLocationKey] = useState(null);
+  const searchOpen = searchLocationKey === location.key;
+  const menuOpen = menuLocationKey === location.key;
   const isAdmin = user?.role === "admin";
 
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setMenuLocationKey(null);
+        setSearchLocationKey(null);
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
+  const closePanels = () => {
+    setMenuLocationKey(null);
+    setSearchLocationKey(null);
+  };
 
   const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-
-    navigate("/");
+    if (location.key !== "default") navigate(-1);
+    else navigate("/");
   };
 
-  const handleNavClick = () => {
-    setMenuOpen(false);
-    setSearchOpen(false);
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    navigate(query ? `/cars?search=${encodeURIComponent(query)}` : "/cars");
+    closePanels();
   };
+
+  const linkClass = ({ isActive }) => `navbar-link${isActive ? " active" : ""}`;
 
   return (
     <header className="navbar">
       <div className="navbar-inner">
-
-        {/* LOGO */}
         <button
           className="navbar-back-button"
+          type="button"
           onClick={handleBack}
           aria-label="Go back"
           title="Go back"
         >
-          <ArrowLeft size={19} />
+          <ArrowLeft size={18} aria-hidden="true" />
         </button>
 
-        <Link to="/" className="navbar-logo">
-          <div className="navbar-logo-icon">
-            <CarFront size={21} />
-          </div>
-
-          <div>
+        <Link to="/" className="navbar-logo" onClick={closePanels} aria-label="CarRent home">
+          <span className="navbar-logo-icon"><CarFront size={21} aria-hidden="true" /></span>
+          <span className="navbar-logo-copy">
             <strong>CarRent</strong>
             <span>Drive your journey</span>
-          </div>
+          </span>
         </Link>
 
-        {/* DESKTOP NAVIGATION */}
-        <nav className={`navbar-links ${menuOpen ? "active" : ""}`}>
-          <Link to="/" onClick={handleNavClick}>Home</Link>
-          <Link to="/buy" onClick={handleNavClick}>Buy</Link>
-          <Link to="/rent" onClick={handleNavClick}>Rent</Link>
-          <Link to="/sell" onClick={handleNavClick}>Sell</Link>
-          <Link to="/services" onClick={handleNavClick}>Services</Link>
-          <Link to="/cars" onClick={handleNavClick}>Cars</Link>
+        <nav
+          className={`navbar-links${menuOpen ? " active" : ""}`}
+          id="site-navigation"
+          aria-label="Main navigation"
+        >
+          {navigation.map(({ label, to, end }) => (
+            <NavLink key={to} to={to} end={end} className={linkClass} onClick={closePanels}>
+              {label}
+            </NavLink>
+          ))}
           {isAdmin && (
-            <Link to="/admin/cars" onClick={handleNavClick}>Admin</Link>
+            <NavLink to="/admin/dashboard" className={linkClass} onClick={closePanels}>
+              Admin
+            </NavLink>
           )}
+          <NavLink
+            to={user ? "/profile" : "/login"}
+            className={(state) => `${linkClass(state)} navbar-account-link`}
+            onClick={closePanels}
+          >
+            {user ? "My Profile" : "Log in"}
+          </NavLink>
         </nav>
 
-        {/* ACTIONS */}
         <div className="navbar-actions">
-
           <button
-            className="navbar-icon-button"
-            onClick={() => setSearchOpen(!searchOpen)}
-            aria-label="Search"
+            className={`navbar-icon-button${searchOpen ? " selected" : ""}`}
+            type="button"
+            onClick={() => {
+              setSearchLocationKey(searchOpen ? null : location.key);
+              setMenuLocationKey(null);
+            }}
+            aria-label={searchOpen ? "Close search" : "Search cars"}
+            aria-expanded={searchOpen}
+            aria-controls="navbar-search-panel"
+            title="Search cars"
           >
-            <Search size={19} />
+            {searchOpen ? <X size={19} aria-hidden="true" /> : <Search size={19} aria-hidden="true" />}
           </button>
 
           <button
             className="navbar-icon-button"
+            type="button"
             onClick={() => navigate("/favorites")}
             aria-label="Favorites"
+            title="Favorites"
           >
-            <Heart size={19} />
+            <Heart size={19} aria-hidden="true" />
           </button>
 
           <button
             className="navbar-icon-button"
+            type="button"
             onClick={() => navigate("/notifications")}
             aria-label="Notifications"
+            title="Notifications"
           >
-            <Bell size={19} />
-            <span className="notification-dot"></span>
+            <Bell size={19} aria-hidden="true" />
           </button>
 
           <button
             className="navbar-profile"
-            onClick={() => navigate("/profile")}
+            type="button"
+          onClick={() => navigate(user ? "/profile" : "/login")}
+          aria-label={user?.fullName ? `Open ${user.fullName}'s profile` : "Log in"}
+            title="Profile"
           >
-            <div className="profile-avatar">
-              <User size={17} />
-            </div>
-
-            <span>
-              {user?.fullName
-                ? user.fullName.split(" ")[0]
-                : "Profile"}
-            </span>
+            <span className="profile-avatar"><User size={17} aria-hidden="true" /></span>
+            <span className="navbar-profile-name">{user?.fullName?.split(" ")[0] || "Log in"}</span>
           </button>
 
           <button
             className="navbar-menu-button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
+            type="button"
+            onClick={() => {
+              setMenuLocationKey(menuOpen ? null : location.key);
+              setSearchLocationKey(null);
+            }}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={menuOpen}
+            aria-controls="site-navigation"
           >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            {menuOpen ? <X size={21} aria-hidden="true" /> : <Menu size={21} aria-hidden="true" />}
           </button>
-
         </div>
       </div>
 
-      {/* SEARCH */}
       {searchOpen && (
-        <div className="navbar-search">
-          <div className="navbar-search-box">
-            <Search size={18} />
+        <div className="navbar-search" id="navbar-search-panel">
+          <form className="navbar-search-box" role="search" onSubmit={handleSearch}>
+            <Search size={18} aria-hidden="true" />
             <input
-              type="text"
-              placeholder="Search cars, brands or models..."
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search cars, brands or models"
+              aria-label="Search cars, brands or models"
               autoFocus
             />
-          </div>
+            {searchQuery && (
+              <button type="button" className="navbar-search-clear" onClick={() => setSearchQuery("")} aria-label="Clear search">
+                <X size={17} aria-hidden="true" />
+              </button>
+            )}
+            <button className="navbar-search-submit" type="submit">Search</button>
+          </form>
         </div>
       )}
     </header>
   );
-};
+}
 
 export default Navbar;

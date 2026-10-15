@@ -1,256 +1,107 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Bell,
-  ArrowLeft,
-  CheckCircle,
-  CalendarCheck,
-  Heart,
-  Tag,
-  CarFront,
-  Trash2,
-} from "lucide-react";
-
+import { ArrowLeft, Bell, CarFront, CheckCheck, Heart, RefreshCw, Trash2, Wrench } from "lucide-react";
 import Navbar from "../../components/Navbar/Navbar";
-
+import { deleteNotification, getNotifications, markNotificationsRead } from "../../Services/adminServices";
 import "./Notification.css";
 
-const initialNotifications = [
-  {
-    id: 1,
-    type: "booking",
-    title: "Booking Confirmed",
-    message: "Your car booking has been successfully confirmed.",
-    time: "2 hours ago",
-    unread: true,
-  },
-  {
-    id: 2,
-    type: "favorite",
-    title: "Car Added to Favorites",
-    message: "A car has been successfully added to your favorites.",
-    time: "5 hours ago",
-    unread: true,
-  },
-  {
-    id: 3,
-    type: "offer",
-    title: "New Car Available",
-    message: "A new car matching your interests is now available.",
-    time: "1 day ago",
-    unread: false,
-  },
-  {
-    id: 4,
-    type: "service",
-    title: "Service Reminder",
-    message: "Your scheduled car service is coming up soon.",
-    time: "2 days ago",
-    unread: false,
-  },
-];
+function formatTime(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+}
 
-const Notifications = () => {
+function Notification() {
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState("");
 
-  const [notifications, setNotifications] =
-    useState(initialNotifications);
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
+    try { setNotifications(await getNotifications()); }
+    catch (requestError) { setError(requestError.message); }
+    finally { setIsLoading(false); }
+  }, []);
+  useEffect(() => { load(); }, [load]);
 
-  const markAllAsRead = () => {
-    setNotifications((previousNotifications) =>
-      previousNotifications.map((notification) => ({
-        ...notification,
-        unread: false,
-      }))
-    );
+  const markRead = async (id) => {
+    setBusyId(id || "all");
+    setError("");
+    try {
+      await markNotificationsRead(id);
+      setNotifications((items) => items.map((item) => !id || item.id === id ? { ...item, isRead: true } : item));
+    } catch (requestError) { setError(requestError.message); }
+    finally { setBusyId(""); }
   };
 
-  const deleteNotification = (id) => {
-    setNotifications((previousNotifications) =>
-      previousNotifications.filter(
-        (notification) => notification.id !== id
-      )
-    );
+  const remove = async (id) => {
+    setBusyId(id);
+    setError("");
+    try {
+      await deleteNotification(id);
+      setNotifications((items) => items.filter((item) => item.id !== id));
+    } catch (requestError) { setError(requestError.message); }
+    finally { setBusyId(""); }
   };
 
-  const getIcon = (type) => {
-    switch (type) {
-      case "booking":
-        return <CalendarCheck size={21} />;
-
-      case "favorite":
-        return <Heart size={21} />;
-
-      case "offer":
-        return <Tag size={21} />;
-
-      case "service":
-        return <CarFront size={21} />;
-
-      default:
-        return <Bell size={21} />;
-    }
-  };
-
-  const unreadCount = notifications.filter(
-    (notification) => notification.unread
-  ).length;
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
 
   return (
     <>
       <Navbar />
-
       <main className="notifications-page">
         <div className="notifications-container">
-
-          {/* HEADER */}
-
-          <section className="notifications-header">
-
-            <button
-              className="notifications-back-button"
-              onClick={() => navigate("/")}
-            >
-              <ArrowLeft size={18} />
-              Back to Home
-            </button>
-
+          <header className="notifications-header">
+            <button className="notifications-back-button" type="button" onClick={() => navigate("/profile")}><ArrowLeft size={17} aria-hidden="true" /> Back to profile</button>
             <div className="notifications-title-row">
-
-              <div>
-                <span className="notifications-eyebrow">
-                  UPDATES
-                </span>
-
-                <h1>
-                  Your <span>Notifications</span>
-                </h1>
-
-                <p>
-                  Stay updated with your bookings, favorites,
-                  services and car activity.
-                </p>
-              </div>
-
-              <div className="notifications-title-icon">
-                <Bell size={30} />
-              </div>
-
+              <div><span className="notifications-eyebrow">YOUR ACCOUNT</span><h1>Notifications</h1><p>Updates about your bookings and service requests.</p></div>
+              <div className="notifications-title-icon" aria-hidden="true"><Bell size={30} /></div>
             </div>
-
             <div className="notifications-toolbar">
-
-              <div className="notifications-count">
-                <Bell size={16} />
-
-                <span>
-                  {unreadCount} unread
-                </span>
+              <span className="notifications-count"><Bell size={16} aria-hidden="true" /> {unreadCount} unread · {notifications.length} total</span>
+              <div className="notifications-toolbar-actions">
+                <button className="mark-read-button" type="button" onClick={() => markRead("")} disabled={!unreadCount || Boolean(busyId)}><CheckCheck size={16} /> Mark all read</button>
+                <button className="notifications-refresh-button" type="button" onClick={load} disabled={isLoading} aria-label="Refresh notifications"><RefreshCw size={16} /></button>
               </div>
-
-              {unreadCount > 0 && (
-                <button
-                  className="mark-read-button"
-                  onClick={markAllAsRead}
-                >
-                  <CheckCircle size={16} />
-                  Mark all as read
-                </button>
-              )}
-
             </div>
+          </header>
 
-          </section>
-
-          {/* NOTIFICATIONS */}
-
-          {notifications.length === 0 ? (
+          {error && <p className="notifications-error" role="alert">{error}</p>}
+          {isLoading ? <p className="notifications-loading" role="status">Loading notifications…</p> : notifications.length === 0 ? (
             <section className="notifications-empty">
-
-              <div className="notifications-empty-icon">
-                <Bell size={42} />
-              </div>
-
-              <h2>
-                No notifications
-              </h2>
-
-              <p>
-                You're all caught up. New updates will appear here.
-              </p>
-
-              <button
-                className="notifications-home-button"
-                onClick={() => navigate("/")}
-              >
-                Back to Home
-              </button>
-
+              <div className="notifications-empty-icon" aria-hidden="true"><CarFront size={36} /></div>
+              <h2>No notifications yet</h2>
+              <p>Booking and service updates will appear here.</p>
+              <button className="notifications-home-button" type="button" onClick={() => navigate("/cars")}>Explore cars</button>
             </section>
           ) : (
-            <section className="notifications-list">
-
-              {notifications.map((notification) => (
-
-                <article
-                  className={`notification-card ${
-                    notification.unread ? "unread" : ""
-                  }`}
-                  key={notification.id}
-                >
-
-                  <div
-                    className={`notification-icon ${notification.type}`}
-                  >
-                    {getIcon(notification.type)}
-                  </div>
-
-                  <div className="notification-content">
-
-                    <div className="notification-top">
-
-                      <h2>
-                        {notification.title}
-                      </h2>
-
-                      {notification.unread && (
-                        <span className="unread-dot"></span>
-                      )}
-
+            <section className="notifications-list" aria-label="Your notifications">
+              {notifications.map((item) => {
+                const TypeIcon = item.type === "service" ? Wrench : item.type === "favorite" ? Heart : CarFront;
+                return (
+                  <article className={`notification-card ${item.isRead ? "" : "unread"}`} key={item.id}>
+                    <div className={`notification-icon ${item.type || "booking"}`} aria-hidden="true"><TypeIcon size={21} /></div>
+                    <div className="notification-content">
+                      <div className="notification-top"><h2>{item.title}</h2>{!item.isRead && <span className="unread-dot" aria-label="Unread" />}</div>
+                      <p>{item.message}</p>
+                      <span className="notification-time">{formatTime(item.createdAt)}</span>
+                      <button type="button" className="notification-open-link" onClick={() => navigate(item.href || "/my-bookings")}>Open update</button>
                     </div>
-
-                    <p>
-                      {notification.message}
-                    </p>
-
-                    <span className="notification-time">
-                      {notification.time}
-                    </span>
-
-                  </div>
-
-                  <button
-                    className="notification-delete"
-                    onClick={() =>
-                      deleteNotification(notification.id)
-                    }
-                    aria-label="Delete notification"
-                    title="Delete notification"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-
-                </article>
-
-              ))}
-
+                    <div className="notification-actions">
+                      {!item.isRead && <button className="notification-mark-button" type="button" disabled={busyId === item.id} onClick={() => markRead(item.id)} aria-label={`Mark ${item.title} read`}>Mark read</button>}
+                      <button className="notification-delete" type="button" disabled={busyId === item.id} onClick={() => remove(item.id)} aria-label={`Delete ${item.title}`} title="Delete notification"><Trash2 size={17} /></button>
+                    </div>
+                  </article>
+                );
+              })}
             </section>
           )}
-
         </div>
       </main>
     </>
   );
-};
+}
 
-export default Notifications;
+export default Notification;

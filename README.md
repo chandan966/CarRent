@@ -1,117 +1,126 @@
-# CarRent — car marketplace and rentals
+# CarRent
 
-CarRent is a React and Vite demo for browsing cars for sale or rent, saving favorites, submitting purchase and rental requests, and managing a user profile. The project also contains admin screens for reviewing requests.
+CarRent is a React and Vite car marketplace and rental app. Users can browse cars for sale or rent, save favorites, create purchase or rental requests, and manage their profile. The project includes MySQL-backed authentication and booking APIs.
 
-**Live site:** [car-rent-seven-ruddy.vercel.app](https://car-rent-seven-ruddy.vercel.app/)
+**Live frontend:** [car-rent-seven-ruddy.vercel.app](https://car-rent-seven-ruddy.vercel.app/)
 
-> The live URL must be redeployed with the database environment variable before the new server authentication and booking features can work. Existing local demo accounts are no longer trusted as sessions.
-
-## Features
-
-- Search, filter, and view sale and rental cars. Sale and rental pages share their inventory data with details and booking pages to keep displayed prices consistent.
-- Save favorites per signed-in email in the current browser.
-- Submit purchase or rental requests. The server verifies the session, car, rental date, duration, and price, then stores the request under the authenticated account.
-- View request history, purchase requests, and rental requests in the profile section.
-- Edit account name, phone, and location through an authenticated server endpoint.
-- Protect user pages behind a server-verified session. Admin UI access is based on the database role.
-- List a car with seller form fields and photos. Seller listings and photo files remain browser-local in this demo.
-
-## Technology and structure
-
-- React 19, Vite, React Router, and Lucide React build the frontend.
-- Vercel serverless handlers under `frontend/api` implement authentication and booking APIs.
-- MySQL stores accounts, hashed sessions, rate-limit records, and booking requests.
-- Node.js `scrypt` hashes passwords with a unique salt.
-- React Context provides the current server-verified account and account-specific favorites.
-
-Important folders:
+## Project layout
 
 ```text
-frontend/
-├── api/                 # Vercel authentication and booking endpoints
-├── public/              # Static assets
-├── src/
-│   ├── components/      # Reusable page components and forms
-│   ├── context/         # Server-backed auth context
-│   ├── data/            # Shared demo car inventory
-│   ├── hooks/           # Favorites and booking data hooks
-│   ├── pages/           # Auth, cars, rentals, profile, admin, and other pages
-│   ├── routes/          # Protected route checks
-│   ├── Services/        # Browser API clients
-│   └── utils/           # Display mapping and validation helpers
-├── server/              # Reserved for future server tooling
-├── SECURITY_SETUP.md    # Database, local, and deployment security setup
-├── .env.example         # Placeholder database connection setting
-└── package.json
+car-rental/
+├── Backend/
+│   ├── server.js             # Standalone Node.js HTTP API server
+│   ├── .env.example          # Safe template; copy to .env.local for local secrets
+│   └── src/
+│       ├── api/              # Authentication and booking request handlers
+│       └── config/           # Private local environment loading
+├── frontend/
+│   ├── src/                  # React pages, components, routes, contexts, and API clients
+│   └── vite.config.js        # Proxies /api requests to the backend during local dev
+├── shared/cars.js            # Demo inventory shared by UI and server validation
+└── scripts/dev.js            # Starts frontend and backend together
 ```
 
-## Run locally
+The frontend no longer contains server/API implementation files. The backend handles API requests on port `3001`; Vite forwards local `/api/*` requests to it. Both apps import the same car inventory so booking prices are checked against the data shown in the app.
 
-1. Install Node.js and npm.
-2. In a terminal, go to `frontend`.
-3. Install dependencies and create a local environment file:
+## Run locally on Windows
 
-   ```bash
+1. Open PowerShell in the project root, the folder containing this `README.md`.
+2. Install project dependencies:
+
+   ```powershell
    npm install
-   cp .env.example .env.local
+   npm install --prefix frontend
+   npm install --prefix Backend
    ```
 
-4. Set `DATABASE_URL` in `.env.local` to your MySQL connection string. For a local MySQL Server, see `frontend/SECURITY_SETUP.md`.
-5. Start Vite:
+3. If `Backend/.env.local` does not exist, copy the safe template:
 
-   ```bash
+   ```powershell
+   Copy-Item Backend/.env.example Backend/.env.local
+   ```
+
+   Open `Backend/.env.local` and put your MySQL connection in `DATABASE_URL`. Keep the existing local credentials if you already have them. Do not paste passwords into chat or commit this file. The backend's local file takes priority over a stale `DATABASE_URL` already set in PowerShell.
+
+4. Start MySQL, then run both apps from the project root:
+
+   ```powershell
    npm run dev
    ```
 
-The local Vite middleware serves `/api/auth/*` and `/api/bookings` as well as the frontend. Database tables are created by the API on its first request. If `DATABASE_URL` is not configured, login, signup, profile updates, and booking requests return an authentication/database configuration error; they do not fall back to insecure browser-only authentication.
+5. Open [http://localhost:5173](http://localhost:5173). The API health address is [http://localhost:3001/api/health](http://localhost:3001/api/health).
 
-## Commands
+Use **Ctrl+C** in that terminal to stop both servers. If you start only the frontend, login and booking APIs will not run; the backend must also be running.
 
-```bash
-npm run dev       # Start local Vite app and API middleware
-npm run build     # Build the frontend
-npm run preview   # Preview the frontend build with the local API middleware
-npm run lint      # Run Oxlint
-npm audit         # Check installed package advisories
+### MySQL connection example
+
+In `Backend/.env.local`, use this format with your own values:
+
+```env
+DATABASE_URL=mysql://carrent_app:URL_ENCODED_PASSWORD@127.0.0.1:3306/carrent
 ```
 
-## Main routes
+The `carrent` database must exist, and the MySQL account must be allowed to create and alter the app tables. URL-encode special characters in the password, especially `@`, `#`, `/`, and `:`. CarRent creates or updates its tables on the first API request.
 
-| Route | Purpose | Access |
-| --- | --- | --- |
-| `/login`, `/signup`, `/forgot-password` | Account entry and recovery information | Public |
-| `/` | Home | Signed in |
-| `/buy`, `/buy/:id` | Sale listings and details | Signed in |
-| `/rent`, `/car/:id` | Rental listings and details | Signed in for list; details page is public |
-| `/cars`, `/cars/:id` | Car catalogue | Public |
-| `/booking?car=:id&type=buy\|rent` | Submit a purchase or rental request | Signed in |
-| `/sell`, `/sell/cars` | Seller information and create listing form | Signed in |
-| `/favorites`, `/profile` | User favorites and account profile | Signed in |
-| `/my-bookings`, `/my-purchases`, `/my-rentals` | Account request history | Signed in |
-| `/admin/*` | Admin screens | Database role `admin` required |
+See [Backend/SECURITY_SETUP.md](Backend/SECURITY_SETUP.md) for the MySQL, Google sign-in, and admin account setup details.
 
-## Security and account configuration
+Google sign-in is optional. To enable it locally, set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` in `Backend/.env.local`. Register this Google OAuth redirect URI:
 
-Follow [frontend/SECURITY_SETUP.md](frontend/SECURITY_SETUP.md) for database setup, deployment environment variables, and trusted admin provisioning.
+```text
+http://localhost:5173/api/auth/google-callback
+```
 
-- Signup always assigns the regular `user` role. The browser cannot grant admin access.
-- Passwords are hashed with `scrypt`; sessions use random tokens stored as hashes in MySQL and `HttpOnly`, `SameSite=Lax` cookies.
-- Login and account creation are rate limited. Mutating requests require JSON and same-origin validation.
-- Purchase and rental request prices are recalculated on the server from the shared inventory; the client cannot submit an arbitrary amount.
-- Booking requests no longer collect or save government ID numbers, document photos, or full residential addresses.
-- On app startup, old local demo session and booking keys are removed because they were not protected server-side.
-- Vercel is configured with a content security policy and standard browser security headers.
+Restart `npm run dev` after changing backend environment values.
 
-## Production limitations
+## Common commands
 
-This is still a marketplace prototype rather than a complete commercial transaction system. The frontend build can succeed without external credentials, but real authentication and booking requests require a reachable MySQL database. The Vercel API files are not automatically supported by a static-only host; another host needs equivalent server functions and environment-variable configuration.
+Run these from the project root:
 
-- The car inventory is demo data in `frontend/src/data/cars.js`.
-- Car listing management, user management, payments, and several dashboard metrics are not backed by production APIs.
-- No payment provider is connected, so requests do not charge customers and invoices/receipts are unavailable.
-- Google sign-in is available after configuring the Google OAuth credentials described in `frontend/SECURITY_SETUP.md`; password reset still needs an email provider and a reset flow.
-- Email addresses are not verified yet. Add a verification flow and published privacy/terms documents before inviting real customers.
-- Seller listing data and photos are still local to the browser and are not visible to other users.
-- Favorites are stored per account in the current browser and do not sync between devices.
+```powershell
+npm run dev           # Start backend and Vite frontend together
+npm run dev:backend   # Start only the backend
+npm run dev:frontend  # Start only the frontend
+npm run build         # Build the frontend for deployment
+npm run preview       # Start backend and frontend build preview together
+npm run lint          # Run Oxlint on the frontend
+```
 
-Do not use real customer transactions until the missing production services, monitoring, backup, privacy, and legal requirements are in place.
+## Current features
+
+- Search, filter, and view sale and rental cars.
+- Save favorites in the current browser; guest favorites and signed-in account favorites are kept separately.
+- Submit server-validated purchase and rental requests.
+- View booking, purchase, rental, and profile information.
+- Update account profile details through the authenticated API.
+- Protect signed-in routes and restrict admin data by database role.
+- Hash passwords with Node.js `scrypt`; store only hashed session tokens and use `HttpOnly` session cookies.
+- Validate auth and booking input on the server, enforce same-origin checks, and rate-limit sign-in attempts.
+
+## Deployment notes
+
+`npm run build` creates the static frontend. The Node API is a separate service and must also be deployed with private environment variables and access to MySQL. Production login and booking requests require the frontend host to proxy `/api/*` to that backend on the same site so secure session cookies and same-origin protections work correctly. The existing Vercel site configuration is for the frontend; it does not automatically run `Backend/server.js`. Configure a production reverse proxy before expecting login or booking APIs to work on the live site.
+
+The backend now stores seller listings, favorites, bookings, service requests, notifications, and account data in MySQL. Demo inventory is inserted into the database the first time the catalogue API is used. This still is not a complete commercial transaction platform: no payment provider, email verification/password-reset provider, production image object storage, backups, monitoring, or legal documents are configured.
+
+## Frontend UI status
+
+The frontend includes responsive routes for home, car browsing, sale and rental listings and details, selling, services, sign-in/sign-up, favorites, booking, notifications, profile history, and admin dashboards for cars, bookings, users, payments, and service requests. The public inventory loads from the backend catalog, with demo cars shown only as a fallback if the API is unavailable. Seller submissions and their exterior/interior photos are uploaded to the backend and remain pending until an administrator publishes them. Signed-in favorites sync to MySQL; guest favorites remain in this browser. Admin users can change roles and disable accounts subject to last-admin safeguards. Admin booking and service status changes are stored and create in-app notifications. Booking totals are recalculated server-side from catalog prices, and overlapping active rental dates are rejected. Navigation/search, contact-seller, form validation, keyboard focus, reduced-motion handling, and responsive layouts are supported.
+
+Notifications and service requests use the backend. The admin dashboard and CSV export use live booking API data. Payment management can show booking amounts and payment statuses, but no money is collected until a real payment provider, signed webhook verification, and checkout flow are configured.
+
+### Backend endpoints
+
+- `GET /api/health` — backend and MySQL readiness, including schema setup.
+- `/api/auth/*` — sign-up, login, logout, current session, profile updates, and optional Google OAuth.
+- `GET /api/cars` and `GET /api/cars/:id?type=rent` — published inventory; `POST /api/cars` — authenticated seller listing and photo upload.
+- `GET /api/bookings` and `POST /api/bookings` — account booking requests, with admin list access and server-side price/date validation.
+- `/api/favorites` — signed-in account favorites.
+- `/api/notifications` — list, mark read, and delete the current user's in-app notifications.
+- `POST /api/services/requests` — submit a service request; admin-only `GET /api/services/requests` lists requests.
+- `/api/admin/cars`, `/api/admin/users`, `/api/admin/bookings/:id`, `/api/admin/service-requests/:id`, and `/api/admin/payments` — administrator-only management operations and read views.
+
+The schema is created/upgraded by the API on demand. Car photos are stored in `Backend/uploads/` for local development; use durable object storage before deploying the backend because many hosting disks are temporary.
+
+Run `npm run build` to create the production frontend bundle and `npm run lint` to check frontend source. The frontend build does not prove that the API, MySQL connection, OAuth, or production deployment is working.
+
+For local end-to-end use, start MySQL, configure `Backend/.env.local`, then run `npm run dev`. Check `http://localhost:3001/api/health` (or the Vite-proxied `/api/health`) before signing in. If MySQL reports `ER_ACCESS_DENIED_ERROR`, fix the username/password and database grants in that private file; the frontend cannot repair a rejected database login. For the deployed Vercel site, configure a backend host, MySQL, and a same-origin `/api/*` and `/uploads/*` reverse proxy as described above. Payment collection, password reset/email verification, durable cloud photo storage, backups, monitoring, and legal documents still need their respective external services and operational setup.

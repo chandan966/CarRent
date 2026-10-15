@@ -10,14 +10,15 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
-import { carsData } from "../../data/cars";
+import { useCars } from "../../context/CarsContext";
 import "./CarsDetails.css";
 
 function CarsDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const car = carsData.find((item) => item.id === Number(id));
+  const { carsData } = useCars();
+  const car = carsData.find((item) => String(item.id) === id);
   const favorite = isFavorite(car, "buy");
 
   return (

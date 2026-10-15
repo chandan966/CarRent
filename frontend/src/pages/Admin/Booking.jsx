@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { CalendarRange, CarFront, CheckCircle2, Search, Clock3 } from "lucide-react";
 import { useBookings } from "../../hooks/useBookings";
+import { updateAdminBooking } from "../../Services/adminServices";
 import "./Booking.css";
 
 function formatDate(value) {
@@ -14,6 +15,18 @@ function formatDate(value) {
 function AdminBookings() {
   const { bookings, isLoading, error } = useBookings();
   const [search, setSearch] = useState("");
+  const [statusById, setStatusById] = useState({});
+  const [busyId, setBusyId] = useState("");
+  const [actionError, setActionError] = useState("");
+  const saveStatus = async (booking, status) => {
+    setBusyId(booking.id);
+    setActionError("");
+    try {
+      await updateAdminBooking(booking.id, status);
+      setStatusById((current) => ({ ...current, [booking.id]: status }));
+    } catch (requestError) { setActionError(requestError.message); }
+    finally { setBusyId(""); }
+  };
   const filteredBookings = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return bookings;
@@ -43,11 +56,13 @@ function AdminBookings() {
           <span>{filteredBookings.length} request{filteredBookings.length === 1 ? "" : "s"}</span>
         </div>
 
+        {actionError && <p className="admin-booking-action-error" role="alert">{actionError}</p>}
+
         {isLoading ? <p role="status">Loading booking requests…</p> : error ? <p role="alert">{error}</p> : (
           <div className="admin-data-wrap">
             <table className="admin-data-table">
               <thead>
-                <tr><th>Booking ID</th><th>Customer</th><th>Car</th><th>Type</th><th>Date</th><th>Status</th></tr>
+                <tr><th>Booking ID</th><th>Customer</th><th>Car</th><th>Type</th><th>Date</th><th>Status</th><th>Update</th></tr>
               </thead>
               <tbody>
                 {filteredBookings.length ? filteredBookings.map((booking) => (
@@ -57,12 +72,13 @@ function AdminBookings() {
                     <td><div className="admin-booking-car"><CarFront size={16} />{booking.carName}</div></td>
                     <td>{booking.bookingType === "rent" ? "Rental" : "Purchase"}</td>
                     <td><div className="booking-date-cell"><CalendarRange size={15} />{formatDate(booking.startDate || booking.createdAt)}</div></td>
-                    <td><span className={`admin-status ${String(booking.status || "Pending").toLowerCase()}`}>
-                      {String(booking.status || "Pending").toLowerCase() === "completed" ? <CheckCircle2 size={14} /> : <Clock3 size={14} />}
-                      {booking.status || "Pending"}
+                    <td><span className={`admin-status ${String(statusById[booking.id] || booking.status || "Pending").toLowerCase()}`}>
+                      {String(statusById[booking.id] || booking.status || "Pending").toLowerCase() === "completed" ? <CheckCircle2 size={14} /> : <Clock3 size={14} />}
+                      {statusById[booking.id] || booking.status || "Pending"}
                     </span></td>
+                    <td><select aria-label={`Update ${booking.id} status`} value={statusById[booking.id] || booking.status || "Pending"} disabled={busyId === booking.id} onChange={(event) => saveStatus(booking, event.target.value)}><option>Pending</option><option>Confirmed</option><option>Cancelled</option><option>Completed</option></select></td>
                   </tr>
-                )) : <tr><td colSpan="6">{search ? "No booking requests match your search." : "No booking requests yet."}</td></tr>}
+                )) : <tr><td colSpan="7">{search ? "No booking requests match your search." : "No booking requests yet."}</td></tr>}
               </tbody>
             </table>
           </div>

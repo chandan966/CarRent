@@ -5,7 +5,7 @@ import { useAuth } from "../../context/useAuth";
 import { createBooking } from "../../Services/bookingServices";
 import "./BookingForm.css";
 
-function BookingForm({ car, type, startDate: initialStartDate = "", days: initialDays = 1 }) {
+function BookingForm({ car, type, startDate: initialStartDate = "", days: initialDays = 1, onStartDateChange, onDaysChange }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,11 +90,11 @@ function BookingForm({ car, type, startDate: initialStartDate = "", days: initia
           <div className="booking-grid">
             <label>
               Pickup date *
-              <input name="startDate" type="date" defaultValue={initialStartDate} min={today} required />
+              <input name="startDate" type="date" defaultValue={initialStartDate} min={today} onChange={(event) => onStartDateChange?.(event.target.value)} required />
             </label>
             <label>
               Duration (days) *
-              <input name="days" type="number" min="1" max="90" defaultValue={initialDays} required />
+              <input name="days" type="number" min="1" max="90" defaultValue={initialDays} onChange={(event) => onDaysChange?.(Math.min(90, Math.max(1, Number(event.target.value) || 1)))} required />
             </label>
             <label>
               Pickup location

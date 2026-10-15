@@ -3,13 +3,20 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
-import { buyCars } from "../../data/cars";
-const featuredCars = buyCars.slice(0, 3);
+import { useCars } from "../../context/CarsContext";
 
 
 const Home = () => {
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { buyCars } = useCars();
+  const featuredCars = buyCars.slice(0, 3);
+  const carCategories = [
+    { title: "SUVs", icon: "🚙", type: "suv", count: buyCars.filter((car) => car.type.toLowerCase() === "suv").length },
+    { title: "Sedans", icon: "🚘", type: "sedan", count: buyCars.filter((car) => car.type.toLowerCase() === "sedan").length },
+    { title: "Premium", icon: "🏎️", type: "premium", count: buyCars.filter((car) => car.price >= 7000000).length },
+    { title: "All Cars", icon: "🚗", type: "", count: buyCars.length },
+  ];
 
   return (
     <div className="home-page">
@@ -86,154 +93,29 @@ const Home = () => {
         </div>
 
         <div className="car-grid">
-
-          {/* BMW */}
-          <article className="car-card">
-            <div className="car-image">
-              <img
-                src={featuredCars[0].image}
-                alt={featuredCars[0].name}
-              />
-
-              <span className="car-badge">
-                FEATURED
-              </span>
-
-              <button
-                className={`favorite-button ${isFavorite(featuredCars[0], "buy") ? "active" : ""}`}
-                onClick={() => toggleFavorite(featuredCars[0], "buy")}
-                aria-label={isFavorite(featuredCars[0], "buy") ? "Remove BMW 3 Series from favorites" : "Add BMW 3 Series to favorites"}
-                type="button"
-              >
-                <Heart size={20} fill={isFavorite(featuredCars[0], "buy") ? "currentColor" : "none"} />
-              </button>
-            </div>
-
-            <div className="car-info">
-              <div className="car-title-row">
-                <div>
-                  <h3>{featuredCars[0].name}</h3>
-
-                  <span>
-                    {featuredCars[0].year} • {featuredCars[0].transmission} • {featuredCars[0].fuel}
-                  </span>
+          {featuredCars.map((car) => {
+            const favorite = isFavorite(car, "buy");
+            return (
+              <article className="car-card" key={car.id}>
+                <div className="car-image">
+                  <img src={car.image} alt={car.name} loading="lazy" />
+                  <span className="car-badge">{car.badge || "FEATURED"}</span>
+                  <button className={`favorite-button ${favorite ? "active" : ""}`} onClick={() => toggleFavorite(car, "buy")} aria-label={`${favorite ? "Remove" : "Add"} ${car.name} ${favorite ? "from" : "to"} favorites`} aria-pressed={favorite} type="button">
+                    <Heart size={20} fill={favorite ? "currentColor" : "none"} />
+                  </button>
                 </div>
-
-                <strong>{featuredCars[0].priceLabel}</strong>
-              </div>
-
-              <div className="car-meta">
-                <span>📍 {featuredCars[0].location}</span>
-                <span>● Available</span>
-              </div>
-
-              <button
-                className="car-details-button"
-                onClick={() => navigate("/buy/1")}
-              >
-                View Details →
-              </button>
-            </div>
-          </article>
-
-          {/* MERCEDES */}
-          <article className="car-card">
-            <div className="car-image">
-              <img
-                src={featuredCars[1].image}
-                alt={featuredCars[1].name}
-              />
-
-              <span className="car-badge">
-                POPULAR
-              </span>
-
-              <button
-                className={`favorite-button ${isFavorite(featuredCars[1], "buy") ? "active" : ""}`}
-                onClick={() => toggleFavorite(featuredCars[1], "buy")}
-                aria-label={isFavorite(featuredCars[1], "buy") ? "Remove Mercedes-Benz C-Class from favorites" : "Add Mercedes-Benz C-Class to favorites"}
-                type="button"
-              >
-                <Heart size={20} fill={isFavorite(featuredCars[1], "buy") ? "currentColor" : "none"} />
-              </button>
-            </div>
-
-            <div className="car-info">
-              <div className="car-title-row">
-                <div>
-                  <h3>{featuredCars[1].name}</h3>
-
-                  <span>
-                    {featuredCars[1].year} • {featuredCars[1].transmission} • {featuredCars[1].fuel}
-                  </span>
+                <div className="car-info">
+                  <div className="car-title-row">
+                    <div><h3>{car.name}</h3><span>{car.year} • {car.transmission} • {car.fuel}</span></div>
+                    <strong>{car.priceLabel}</strong>
+                  </div>
+                  <div className="car-meta"><span>📍 {car.location}</span><span>● Available</span></div>
+                  <button className="car-details-button" type="button" onClick={() => navigate(`/buy/${car.id}`)}>View Details →</button>
                 </div>
-
-                <strong>{featuredCars[1].priceLabel}</strong>
-              </div>
-
-              <div className="car-meta">
-                <span>📍 {featuredCars[1].location}</span>
-                <span>● Available</span>
-              </div>
-
-              <button
-                className="car-details-button"
-                onClick={() => navigate("/buy/2")}
-              >
-                View Details →
-              </button>
-            </div>
-          </article>
-
-          {/* AUDI */}
-          <article className="car-card">
-            <div className="car-image">
-              <img
-                src={featuredCars[2].image}
-                alt={featuredCars[2].name}
-              />
-
-              <span className="car-badge">
-                NEW
-              </span>
-
-              <button
-                className={`favorite-button ${isFavorite(featuredCars[2], "buy") ? "active" : ""}`}
-                onClick={() => toggleFavorite(featuredCars[2], "buy")}
-                aria-label={isFavorite(featuredCars[2], "buy") ? "Remove Audi A6 from favorites" : "Add Audi A6 to favorites"}
-                type="button"
-              >
-                <Heart size={20} fill={isFavorite(featuredCars[2], "buy") ? "currentColor" : "none"} />
-              </button>
-            </div>
-
-            <div className="car-info">
-              <div className="car-title-row">
-                <div>
-                  <h3>{featuredCars[2].name}</h3>
-
-                  <span>
-                    {featuredCars[2].year} • {featuredCars[2].transmission} • {featuredCars[2].fuel}
-                  </span>
-                </div>
-
-                <strong>{featuredCars[2].priceLabel}</strong>
-              </div>
-
-              <div className="car-meta">
-                <span>📍 {featuredCars[2].location}</span>
-                <span>● Available</span>
-              </div>
-
-              <button
-                className="car-details-button"
-                onClick={() => navigate("/buy/3")}
-              >
-                View Details →
-              </button>
-            </div>
-          </article>
-
+              </article>
+            );
+          })}
+          {featuredCars.length === 0 && <p>No active cars are listed right now.</p>}
         </div>
       </section>
 
@@ -257,63 +139,22 @@ const Home = () => {
         </div>
 
         <div className="category-grid">
-
-          {/* SUV */}
-          <button className="category-card">
-            <div className="category-icon">
-              🚙
-            </div>
-
-            <div className="category-content">
-              <h3>SUVs</h3>
-              <span>120+ Cars</span>
-            </div>
-
-            <strong>→</strong>
-          </button>
-
-          {/* SEDAN */}
-          <button className="category-card">
-            <div className="category-icon">
-              🚘
-            </div>
-
-            <div className="category-content">
-              <h3>Sedans</h3>
-              <span>95+ Cars</span>
-            </div>
-
-            <strong>→</strong>
-          </button>
-
-          {/* LUXURY */}
-          <button className="category-card">
-            <div className="category-icon">
-              🏎️
-            </div>
-
-            <div className="category-content">
-              <h3>Luxury</h3>
-              <span>60+ Cars</span>
-            </div>
-
-            <strong>→</strong>
-          </button>
-
-          {/* ELECTRIC */}
-          <button className="category-card">
-            <div className="category-icon">
-              ⚡
-            </div>
-
-            <div className="category-content">
-              <h3>Electric</h3>
-              <span>45+ Cars</span>
-            </div>
-
-            <strong>→</strong>
-          </button>
-
+          {carCategories.map((category) => (
+            <button
+              className="category-card"
+              key={category.type || "all"}
+              type="button"
+              onClick={() => navigate(category.type ? `/cars?type=${category.type}` : "/cars")}
+              aria-label={`Browse ${category.title}, ${category.count} cars`}
+            >
+              <div className="category-icon" aria-hidden="true">{category.icon}</div>
+              <div className="category-content">
+                <h3>{category.title}</h3>
+                <span>{category.count} {category.count === 1 ? "car" : "cars"}</span>
+              </div>
+              <strong aria-hidden="true">→</strong>
+            </button>
+          ))}
         </div>
       </section>
 

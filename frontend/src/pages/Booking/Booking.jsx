@@ -1,23 +1,27 @@
 import './Booking.css';
+import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
 import BookingForm from "../../components/booking/BookingForm";
 import BookingSummary from "../../components/booking/BookingSummary";
-import { buyCars, rentalCars } from "../../data/cars";
+import { useCars } from "../../context/CarsContext";
 
 function Booking() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const carId = Number(searchParams.get("car"));
+  const carId = searchParams.get("car") || "";
   const type = searchParams.get("type") === "rent" ? "rent" : "buy";
   const startDate = searchParams.get("startDate") || "";
   const days = Number(searchParams.get("days")) || 1;
+  const [summaryStartDate, setSummaryStartDate] = useState(startDate);
+  const [summaryDays, setSummaryDays] = useState(days);
 
+  const { buyCars, rentalCars } = useCars();
   const selectedCar = (type === "rent" ? rentalCars : buyCars)
-    .find((car) => car.id === carId);
+    .find((car) => String(car.id) === carId);
 
   if (!selectedCar) {
     return (
@@ -78,6 +82,8 @@ function Booking() {
                 type={type}
                 startDate={startDate}
                 days={days}
+                onStartDateChange={setSummaryStartDate}
+                onDaysChange={setSummaryDays}
               />
             </section>
 
@@ -85,8 +91,8 @@ function Booking() {
               <BookingSummary
                 car={selectedCar}
                 type={type}
-                startDate={startDate}
-                days={days}
+                startDate={summaryStartDate}
+                days={summaryDays}
               />
             </aside>
 

@@ -1,0 +1,19 @@
+.admin-services-page { min-height: 100vh; padding: 40px; background: #f8fafc; color: #0f172a; }
+.admin-services-page .admin-table-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.admin-services-page .admin-table-header h1 { margin: 0; font-size: 2rem; }
+.admin-services-page .admin-table-header p { margin: 7px 0 0; color: #64748b; font-size: 13px; }
+.admin-services-page .admin-card-table { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 18px; background: #fff; box-shadow: 0 8px 20px rgba(15,23,42,.03); }
+.admin-services-page .admin-card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 22px; border-bottom: 1px solid #e2e8f0; }
+.admin-services-page .admin-card-header h2 { margin: 0; font-size: 1.2rem; }
+.admin-services-page .admin-data-wrap { overflow: auto; }
+.admin-services-page .admin-data-table { width: 100%; border-collapse: collapse; }
+.admin-services-page .admin-data-table th,.admin-services-page .admin-data-table td { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+.admin-services-page .admin-data-table th { background: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; }
+.admin-services-page .admin-data-table a { color: #0369a1; text-decoration: none; }
+.admin-service-name { display: flex; gap: 10px; align-items: flex-start; color: #0369a1; }
+.admin-service-name strong,.admin-service-name span { display: block; color: #0f172a; }
+.admin-service-name span { margin-top: 4px; color: #94a3b8; font-size: 11px; }
+.admin-service-notes { max-width: 260px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-services-page select { min-width: 120px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: #334155; }
+.admin-service-error { padding: 12px 14px; border-radius: 10px; background: #fef2f2; color: #991b1b; }
+@media (max-width: 700px) { .admin-services-page { padding: 20px 14px; } .admin-services-page .admin-table-header { flex-direction: column; align-items: stretch; } }

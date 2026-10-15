@@ -176,7 +176,7 @@ function Profile() {
                 <input
                   id="profile-image-input"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp"
                   onChange={handleImageChange}
                   hidden
                 />

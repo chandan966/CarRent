@@ -1,0 +1,50 @@
+.service-request-page {
+  min-height: calc(100vh - 76px);
+  padding: 40px 24px 80px;
+  background: #f5f8fc;
+}
+
+.service-request-container { width: min(100%, 1100px); margin: 0 auto; }
+.service-request-back { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 24px; padding: 8px 0; border: 0; background: transparent; color: #075d72; font-weight: 700; }
+.service-request-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, .75fr); align-items: start; gap: 22px; }
+.service-request-card, .service-request-summary { padding: clamp(22px, 4vw, 38px); border: 1px solid #e2e8f0; border-radius: 22px; background: #fff; box-shadow: 0 16px 40px rgb(15 23 42 / 6%); }
+.service-request-eyebrow { display: block; margin-bottom: 9px; color: #0c6d83; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.service-request-card h1 { margin: 0; color: #0f172a; font-size: clamp(26px, 4vw, 36px); letter-spacing: -.04em; }
+.service-request-intro { max-width: 620px; margin: 12px 0 25px; color: #64748b; line-height: 1.7; }
+.service-request-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.service-request-form label { display: grid; gap: 7px; color: #334155; font-size: 13px; font-weight: 700; }
+.service-request-form input, .service-request-form textarea { width: 100%; min-width: 0; min-height: 46px; padding: 11px 13px; border: 1px solid #dbe4ec; border-radius: 11px; outline: 0; background: #fff; color: #14212b; font: inherit; font-size: 14px; }
+.service-request-form input:focus, .service-request-form textarea:focus { border-color: #0c829b; box-shadow: 0 0 0 3px rgb(12 130 155 / 12%); }
+.service-request-date-input { position: relative; display: block; }
+.service-request-date-input svg { position: absolute; top: 14px; left: 13px; color: #64748b; pointer-events: none; }
+.service-request-date-input input { padding-left: 39px; }
+.service-request-notes { grid-column: 1 / -1; }
+.service-request-notes span { color: #94a3b8; font-weight: 500; }
+.service-request-form textarea { resize: vertical; }
+.service-request-preview-note { grid-column: 1 / -1; margin: 0; padding: 12px 14px; border-radius: 10px; background: #fff8e7; color: #795b17; font-size: 12px; line-height: 1.6; }
+.service-request-submit, .service-request-result button { grid-column: 1 / -1; min-height: 48px; padding: 0 18px; border: 0; border-radius: 11px; background: #0c6d83; color: white; font-size: 14px; font-weight: 750; }
+.service-request-submit:hover, .service-request-result button:hover { background: #075d72; }
+.service-request-summary { position: sticky; top: 98px; }
+.service-request-summary-icon, .service-request-success-icon { display: grid; width: 48px; height: 48px; margin-bottom: 20px; place-items: center; border-radius: 14px; background: #e8f4f7; color: #075d72; }
+.service-request-summary h2 { margin: 0 0 8px; color: #0f172a; font-size: 21px; }
+.service-request-summary > p { margin: 0 0 17px; color: #64748b; font-size: 14px; }
+.service-request-summary > div:not(.service-request-summary-icon) { display: flex; align-items: center; gap: 8px; padding: 13px 0; border-top: 1px solid #e8edf2; color: #475569; font-size: 13px; }
+.service-request-summary > a { display: inline-flex; margin-top: 16px; color: #075d72; font-size: 13px; font-weight: 750; text-decoration: none; }
+.service-request-result { max-width: 620px; }
+.service-request-result > p { margin: 15px 0 24px; color: #64748b; line-height: 1.7; }
+.service-request-result button { width: 100%; }
+.service-request-not-found { max-width: 560px; margin: 60px auto; text-align: center; }
+.service-request-not-found > svg { margin-bottom: 14px; color: #0c6d83; }
+.service-request-not-found p { color: #64748b; }
+.service-request-not-found a { display: inline-flex; margin-top: 14px; color: #075d72; font-weight: 750; }
+
+@media (max-width: 760px) {
+  .service-request-layout { grid-template-columns: 1fr; }
+  .service-request-summary { position: static; }
+}
+
+@media (max-width: 520px) {
+  .service-request-page { padding: 26px 15px 50px; }
+  .service-request-form { grid-template-columns: 1fr; }
+  .service-request-notes, .service-request-preview-note, .service-request-submit { grid-column: auto; }
+}

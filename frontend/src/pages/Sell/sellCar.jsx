@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CarFront, CheckCircle2, ImagePlus, X } from "lucide-react";
-import { useAuth } from "../../context/useAuth";
 import Navbar from "../../components/Navbar/Navbar";
+import { createSellerListing } from "../../Services/carservices";
 import "./SellCar.css";
 
 const MAX_PHOTOS = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const PHOTO_DB_NAME = "carRentalPhotoStorage";
-const PHOTO_STORE_NAME = "photos";
 
 const emptyForm = {
   brand: "",
@@ -21,60 +19,6 @@ const emptyForm = {
   transmission: "Automatic",
   phone: "",
 };
-
-function openPhotoDatabase() {
-  return new Promise((resolve, reject) => {
-    const request = window.indexedDB.open(PHOTO_DB_NAME, 1);
-
-    request.onupgradeneeded = () => {
-      request.result.createObjectStore(PHOTO_STORE_NAME, { keyPath: "id" });
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function savePhotoFiles(listingId, outsidePhotos, insidePhotos) {
-  const database = await openPhotoDatabase();
-  const transaction = database.transaction(PHOTO_STORE_NAME, "readwrite");
-  const store = transaction.objectStore(PHOTO_STORE_NAME);
-  const photoRefs = { outside: [], inside: [] };
-
-  outsidePhotos.forEach((photo, index) => {
-    const id = listingId + ":outside:" + index;
-    store.put({
-      id,
-      listingId,
-      category: "outside",
-      name: photo.name,
-      type: photo.file.type,
-      file: photo.file,
-    });
-    photoRefs.outside.push(id);
-  });
-
-  insidePhotos.forEach((photo, index) => {
-    const id = listingId + ":inside:" + index;
-    store.put({
-      id,
-      listingId,
-      category: "inside",
-      name: photo.name,
-      type: photo.file.type,
-      file: photo.file,
-    });
-    photoRefs.inside.push(id);
-  });
-
-  await new Promise((resolve, reject) => {
-    transaction.oncomplete = resolve;
-    transaction.onerror = () => reject(transaction.error);
-    transaction.onabort = () => reject(transaction.error);
-  });
-
-  database.close();
-  return photoRefs;
-}
 
 function PhotoUploadGroup({ title, description, photos, inputId, onChange, onRemove }) {
   return (
@@ -125,13 +69,13 @@ function PhotoUploadGroup({ title, description, photos, inputId, onChange, onRem
 
 function SellCar() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [form, setForm] = useState(emptyForm);
   const [outsidePhotos, setOutsidePhotos] = useState([]);
   const [insidePhotos, setInsidePhotos] = useState([]);
   const [photoError, setPhotoError] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submittedListingId, setSubmittedListingId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const previewUrls = useRef(new Set());
 
@@ -211,47 +155,17 @@ function SellCar() {
     setIsSaving(true);
 
     try {
-      const listingId = String(Date.now());
-      const photoRefs = await savePhotoFiles(
-        listingId,
-        outsidePhotos,
-        insidePhotos
-      );
-      const savedListings = JSON.parse(
-        localStorage.getItem("carRentalSellerListings") || "[]"
-      );
-
-      const listing = {
-        id: listingId,
-        name: form.brand.trim() + " " + form.model.trim(),
-        brand: form.brand.trim(),
-        model: form.model.trim(),
-        year: Number(form.year),
-        price: Number(form.price),
-        priceLabel: "₹" + Number(form.price).toLocaleString("en-IN"),
-        location: form.location.trim(),
-        mileage: form.mileage.trim(),
-        fuel: form.fuel,
-        transmission: form.transmission,
-        photos: photoRefs,
-        sellerName: user?.fullName || "Car seller",
-        sellerPhone: form.phone.trim(),
-        sellerEmail: user?.email || "",
-        status: "pending",
-        createdAt: new Date().toISOString(),
-      };
-
-      const listings = Array.isArray(savedListings) ? savedListings : [];
-      localStorage.setItem(
-        "carRentalSellerListings",
-        JSON.stringify([listing, ...listings])
-      );
+      const upload = new FormData(event.currentTarget);
+      outsidePhotos.forEach((photo) => upload.append("outsidePhotos", photo.file, photo.name));
+      insidePhotos.forEach((photo) => upload.append("insidePhotos", photo.file, photo.name));
+      const savedListing = await createSellerListing(upload);
 
       previewUrls.current.forEach((url) => URL.revokeObjectURL(url));
       previewUrls.current.clear();
       setOutsidePhotos([]);
       setInsidePhotos([]);
       setForm(emptyForm);
+      setSubmittedListingId(savedListing.id);
       setSubmitted(true);
     } catch {
       setError(
@@ -287,9 +201,7 @@ function SellCar() {
             <div className="sell-car-success" role="status">
               <CheckCircle2 size={20} />
               <span>
-                Your listing and photos were saved in this browser. They are not
-                published to the public car list because this project has no
-                connected backend yet.
+                Your listing {submittedListingId} and photos were saved to the server. It is pending admin review and will appear publicly after approval.
               </span>
             </div>
           )}

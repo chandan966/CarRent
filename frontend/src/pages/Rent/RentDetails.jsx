@@ -1,6 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
-import { rentalCars } from "../../data/cars";
+import { useCars } from "../../context/CarsContext";
 import "./RentDetails.css";
 
 
@@ -8,10 +8,11 @@ const RentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { rentalCars } = useCars();
   const pickupDate = searchParams.get("pickup") || "";
   const returnDate = searchParams.get("return") || "";
 
-  const car = rentalCars.find((item) => item.id === Number(id));
+  const car = rentalCars.find((item) => String(item.id) === id);
 
   if (!car) {
     return (

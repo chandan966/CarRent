@@ -11,12 +11,14 @@ import {
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
+import { useAuth } from "../../context/useAuth";
 
 import "./Favorites.css";
 
 function Favorites() {
   const navigate = useNavigate();
   const { favorites: cars, removeFavorite } = useFavorites();
+  const { user } = useAuth();
 
   return (
     <>
@@ -29,10 +31,10 @@ function Favorites() {
           <section className="favorites-header">
             <button
               className="favorites-back-button"
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(user ? "/profile" : "/cars")}
             >
               <ArrowLeft size={18} />
-              Back to Profile
+              {user ? "Back to Profile" : "Back to Cars"}
             </button>
 
             <div className="favorites-title-row">

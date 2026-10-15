@@ -14,12 +14,13 @@ import {
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useFavorites } from "../../hooks/useFavorites";
-import { buyCars as cars } from "../../data/cars";
+import { useCars } from "../../context/CarsContext";
 
 
 const Buy = () => {
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { buyCars: cars } = useCars();
 
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
@@ -67,7 +68,7 @@ const Buy = () => {
     }
 
     return result;
-  }, [search, brand, fuel, location, sort]);
+  }, [search, brand, fuel, location, sort, cars]);
 
   const clearFilters = () => {
     setSearch("");
@@ -108,6 +109,7 @@ const Buy = () => {
             className="buy-search-input"
             type="text"
             placeholder="Search cars, brands or models..."
+            aria-label="Search cars, brands or models"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -128,18 +130,29 @@ const Buy = () => {
             }`}
             type="button"
             onClick={() => setFiltersOpen(!filtersOpen)}
+            aria-expanded={filtersOpen}
+            aria-controls="buy-filter-row"
           >
             <SlidersHorizontal size={18} />
             Filters
           </button>
 
-          <button className="search-button" type="button">
-            Search
+          <button
+            className="search-button"
+            type="button"
+            onClick={() => {
+              setFiltersOpen(false);
+              document.getElementById("buy-listings")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            aria-label="View cars matching the current search and filters"
+          >
+            View results
           </button>
         </div>
 
         {/* FILTERS */}
         <div
+          id="buy-filter-row"
           className={`filter-row ${
             filtersOpen ? "mobile-filter-open" : ""
           }`}
@@ -192,7 +205,7 @@ const Buy = () => {
       </section>
 
       {/* LISTINGS */}
-      <main className="buy-listings">
+      <main className="buy-listings" id="buy-listings">
         <div className="buy-listings-header">
           <div>
             <span className="section-label">

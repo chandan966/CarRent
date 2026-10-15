@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Auth
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import NotFound from "./pages/NotFound/NotFound";
 
 // Home
 import Home from "./pages/Home/Home";
@@ -27,6 +28,7 @@ import CarsDetails from "./pages/Cars/CarsDetails";
 // Services
 import Services from "./pages/Services/Services";
 import ServiceDetails from "./pages/Services/ServiceDetails";
+import ServiceRequest from "./pages/Services/ServiceRequest";
 
 // Booking
 import Booking from "./pages/Booking/Booking";
@@ -51,10 +53,13 @@ import AdminCars from "./pages/Admin/Cars";
 import AdminBookings from "./pages/Admin/Booking";
 import AdminUsers from "./pages/Admin/Users";
 import AdminPayments from "./pages/Admin/Payments";
+import AdminServices from "./pages/Admin/Services";
 
 function App() {
   return (
     <BrowserRouter>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <div id="main-content" tabIndex={-1}>
       <Routes>
 
         {/* ================================
@@ -83,11 +88,7 @@ function App() {
 
         <Route
           path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
+          element={<Home />}
         />
 
 
@@ -97,20 +98,12 @@ function App() {
 
         <Route
           path="/buy"
-          element={
-            <ProtectedRoute>
-              <Buy />
-            </ProtectedRoute>
-          }
+          element={<Buy />}
         />
 
         <Route
           path="/buy/:id"
-          element={
-            <ProtectedRoute>
-              <BuyDetails />
-            </ProtectedRoute>
-          }
+          element={<BuyDetails />}
         />
 
 
@@ -120,11 +113,7 @@ function App() {
 
         <Route
           path="/rent"
-          element={
-            <ProtectedRoute>
-              <Rent />
-            </ProtectedRoute>
-          }
+          element={<Rent />}
         />
 
         {/* Rent Car Details - Public */}
@@ -140,11 +129,7 @@ function App() {
 
         <Route
           path="/sell"
-          element={
-            <ProtectedRoute>
-              <Sell />
-            </ProtectedRoute>
-          }
+          element={<Sell />}
         />
 
         <Route
@@ -178,20 +163,17 @@ function App() {
 
         <Route
           path="/services"
-          element={
-            <ProtectedRoute>
-              <Services />
-            </ProtectedRoute>
-          }
+          element={<Services />}
         />
 
         <Route
           path="/services/:id"
-          element={
-            <ProtectedRoute>
-              <ServiceDetails />
-            </ProtectedRoute>
-          }
+          element={<ServiceDetails />}
+        />
+
+        <Route
+          path="/service-request/:id"
+          element={<ServiceRequest />}
         />
 
 
@@ -238,11 +220,7 @@ function App() {
 
         <Route
           path="/favorites"
-          element={
-            <ProtectedRoute>
-              <Favorites />
-            </ProtectedRoute>
-          }
+          element={<Favorites />}
         />
 
         <Route
@@ -331,29 +309,25 @@ function App() {
           }
         />
 
+        <Route
+          path="/admin/services"
+          element={
+            <AdminRoute>
+              <AdminServices />
+            </AdminRoute>
+          }
+        />
+
 
         {/* ================================
             UNKNOWN ROUTES
         ================================= */}
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/login"
-              replace
-            />
-          }
-        />
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
-
-
-      {/* DEVELOPER CREDIT */}
-
-      <div className="developer-credit">
-        Developer Chandan Ghanghav
       </div>
+
 
     </BrowserRouter>
   );

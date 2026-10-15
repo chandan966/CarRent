@@ -14,7 +14,7 @@ import "./MyBookings.css";
 
 function formatBookingDate(value) {
   if (!value) return "Date not provided";
-  const date = new Date(value);
+  const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? `${value}T00:00:00` : value);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 }
 
@@ -74,7 +74,9 @@ function MyBookings() {
                   <div className="my-booking-main">
                     <div className="my-booking-title-row">
                       <h2>{booking.carName || "Car booking"}</h2>
-                      <span className="my-booking-status">Request submitted</span>
+                      <span className={`my-booking-status ${String(booking.status || "pending").toLowerCase()}`}>
+                        {String(booking.status || "Pending").replace(/^./, (letter) => letter.toUpperCase())}
+                      </span>
                     </div>
                     <p>
                       {booking.bookingType === "rent"
@@ -85,7 +87,7 @@ function MyBookings() {
                     <div className="my-booking-meta">
                       <span>
                         <CalendarDays size={15} />
-                        {booking.startDate || formatBookingDate(booking.createdAt)}
+                        {formatBookingDate(booking.startDate || booking.createdAt)}
                       </span>
                       <span>
                         <Clock3 size={15} />

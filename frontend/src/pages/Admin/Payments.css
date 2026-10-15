@@ -62,3 +62,45 @@
     grid-template-columns: 1fr;
   }
 }
+.admin-payment-unavailable {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 22px 0;
+  padding: 18px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #334155;
+}
+
+.admin-payment-unavailable > span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: #075d72;
+}
+
+.admin-payment-unavailable strong { display: block; color: #0f172a; }
+.admin-payment-unavailable p { margin: 5px 0 0; color: #64748b; font-size: 13px; line-height: 1.6; }
+.admin-payment-placeholder { margin-top: 18px; }
+.admin-payment-placeholder .admin-card-header > svg { color: #0c6d83; }
+.admin-payment-empty { display: grid; min-height: 230px; place-content: center; justify-items: center; gap: 9px; padding: 24px; text-align: center; color: #64748b; }
+.admin-payment-empty svg { color: #0c6d83; }
+.admin-payment-empty strong { color: #334155; }
+.admin-payment-empty span { max-width: 440px; font-size: 13px; line-height: 1.6; }
+.admin-payment-error { padding: 12px 14px; border-radius: 10px; background: #fef2f2; color: #991b1b; }
+.admin-payment-status { display: inline-flex; padding: 5px 9px; border-radius: 999px; background: #fef3c7; color: #92400e; font-size: 12px; font-weight: 700; text-transform: capitalize; }
+.admin-payment-status.paid { background: #dcfce7; color: #166534; }
+.admin-payment-status.failed { background: #fee2e2; color: #991b1b; }
+.admin-payments-page .admin-card-table { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 18px; background: #fff; }
+.admin-payments-page .admin-card-header { display: flex; align-items: center; gap: 12px; padding: 20px 22px; border-bottom: 1px solid #e2e8f0; }
+.admin-payments-page .admin-card-header h2 { margin-right: auto; }
+.admin-payments-page .admin-data-wrap { overflow: auto; }
+.admin-payments-page .admin-data-table { width: 100%; border-collapse: collapse; }
+.admin-payments-page .admin-data-table th,.admin-payments-page .admin-data-table td { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+.admin-payments-page .admin-data-table th { background: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; }
