@@ -1,3 +1,5 @@
+import mysql from "mysql2/promise";
+import { readFileSync } from "node:fs";
 import {
   createHash,
   randomBytes,
@@ -6,7 +8,7 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import { promisify } from "node:util";
-import mysql from "mysql2/promise";
+// import mysql from "mysql2/promise";
 import { OAuth2Client } from "google-auth-library";
 
 const scrypt = promisify(scryptCallback);
@@ -56,8 +58,16 @@ export function database() {
       charset: "utf8mb4",
       dateStrings: true,
       ...(process.env.NODE_ENV === "production" || process.env.DATABASE_SSL === "require"
-        ? { ssl: { rejectUnauthorized: true } }
-        : {}),
+  ? {
+      ssl: {
+        ca: readFileSync(
+          new URL("../../certs/aiven-ca.pem", import.meta.url),
+          "utf8"
+        ),
+        rejectUnauthorized: true,
+      },
+    }
+  : {}),
     });
 
     // Keep the existing parameterized template-query call sites while binding
