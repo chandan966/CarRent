@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Footer from "./components/Footer/Footer";
 
 // Auth
 import Login from "./pages/Auth/Login";
@@ -326,6 +327,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
 
       </Routes>
+      <Footer />
       </div>
 
 
