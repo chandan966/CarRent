@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Footer from "./components/Footer/Footer";
 
 // Auth
@@ -56,9 +56,12 @@ import AdminUsers from "./pages/Admin/Users";
 import AdminPayments from "./pages/Admin/Payments";
 import AdminServices from "./pages/Admin/Services";
 
-function App() {
+function AppLayout() {
+  const location = useLocation();
+  const isAuthPage = ["/login", "/signup", "/forgot-password"].includes(location.pathname);
+
   return (
-    <BrowserRouter>
+    <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <div id="main-content" tabIndex={-1}>
       <Routes>
@@ -327,10 +330,16 @@ function App() {
         <Route path="*" element={<NotFound />} />
 
       </Routes>
-      <Footer />
+      {!isAuthPage && <Footer />}
       </div>
+    </>
+  );
+}
 
-
+function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
     </BrowserRouter>
   );
 }
