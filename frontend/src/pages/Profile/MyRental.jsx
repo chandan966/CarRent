@@ -3,6 +3,9 @@ import { useState } from "react";
 import { getRentalHistory } from "../../utils/bookingStorage";
 import { useBookings } from "../../hooks/useBookings";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
+import { createPaymentOrder, verifyPayment } from "../../Services/paymentServices";
+import { loadRazorpayCheckout } from "../../Services/razorpayCheckout";
 import {
   ArrowLeft,
   CarFront,
@@ -32,9 +35,13 @@ function MyRentals() {
   const { bookings, isLoading, error } = useBookings();
   const rentals = getRentalHistory(bookings);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
+  const [payingRentalId, setPayingRentalId] = useState("");
+  const [paidRentalIds, setPaidRentalIds] = useState(() => new Set());
+  const [paymentError, setPaymentError] = useState("");
 
   const filters = ["All", "Pending", "Upcoming", "Completed"];
 
@@ -52,6 +59,50 @@ function MyRentals() {
   const pendingCount = rentals.filter((rental) => rental.status === "Pending").length;
   const completedCount = rentals.filter((rental) => rental.status === "Completed").length;
   const totalSpent = rentals.reduce((total, rental) => total + (rental.payment === "Paid" ? rental.amount : 0), 0);
+
+  const handlePayNow = async (rental) => {
+    setPaymentError("");
+    setPayingRentalId(rental.id);
+    try {
+      await loadRazorpayCheckout();
+      const order = await createPaymentOrder(rental.id);
+      const checkout = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "CarRent",
+        description: `${rental.name} rental`,
+        order_id: order.orderId,
+        prefill: {
+          name: user?.fullName || "",
+          email: user?.email || "",
+          contact: user?.phone || "",
+        },
+        theme: { color: "#0284c7" },
+        handler: async (paymentResponse) => {
+          try {
+            await verifyPayment(rental.id, paymentResponse);
+            setPaidRentalIds((current) => new Set(current).add(rental.id));
+          } catch {
+            setPaymentError("Payment was submitted, but confirmation could not be verified. Do not pay again; refresh the page or contact support.");
+          } finally {
+            setPayingRentalId("");
+          }
+        },
+        modal: {
+          ondismiss: () => setPayingRentalId(""),
+        },
+      });
+      checkout.on("payment.failed", (event) => {
+        setPaymentError(event.error?.description || "Payment failed. Please try again.");
+        setPayingRentalId("");
+      });
+      checkout.open();
+    } catch (error) {
+      setPaymentError(error.message || "Could not start payment. Please try again.");
+      setPayingRentalId("");
+    }
+  };
 
   return (
     <>
@@ -195,9 +246,13 @@ function MyRentals() {
 
               <div className="rental-cards">
 
-                {filteredRentals.map((rental) => (
-
-                  <article className="rental-card" key={rental.id}>
+                {paymentError && <p className="rental-payment-error" role="alert">{paymentError}</p>}
+                {filteredRentals.map((rental) => {
+                  const payment = paidRentalIds.has(rental.id) ? "Paid" : rental.payment;
+                  const isPaid = payment.toLowerCase() === "paid";
+                  const canPay = ["Pending", "Confirmed"].includes(rental.bookingStatus);
+                  return (
+                    <article className="rental-card" key={rental.id}>
 
                     {/* IMAGE */}
 
@@ -276,9 +331,9 @@ function MyRentals() {
 
                         <div>
                           <span>Payment</span>
-                          <strong className={"rental-payment " + (rental.payment === "Paid" ? "paid" : "pending")}>
-                            <CheckCircle2 size={14} />
-                            {rental.payment}
+                          <strong className={"rental-payment " + (isPaid ? "paid" : "pending")}>
+                            {isPaid ? <CheckCircle2 size={14} /> : <Clock3 size={14} />}
+                            {payment}
                           </strong>
                         </div>
 
@@ -294,6 +349,22 @@ function MyRentals() {
                       {/* ACTIONS */}
 
                       <div className="rental-actions">
+                        <button
+                          className="rental-pay-button"
+                          type="button"
+                          onClick={() => handlePayNow(rental)}
+                          disabled={isPaid || !canPay || payingRentalId === rental.id}
+                          title={!isPaid && !canPay ? "Payment is unavailable for this rental." : undefined}
+                        >
+                          <IndianRupee size={16} />
+                          {isPaid
+                            ? "Paid"
+                            : payingRentalId === rental.id
+                              ? "Opening checkout…"
+                              : canPay
+                                ? "Pay Now"
+                                : "Unavailable"}
+                        </button>
 
                         {rental.status === "Upcoming" && (
                           <button
@@ -333,9 +404,9 @@ function MyRentals() {
 
                     </div>
 
-                  </article>
-
-                ))}
+                    </article>
+                  );
+                })}
 
               </div>
 

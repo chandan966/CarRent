@@ -32,7 +32,16 @@ function Footer() {
 
       <div className="site-footer-bottom">
         <span>© {new Date().getFullYear()} CarRent</span>
-        <span className="site-footer-credit">Made by <strong>@webdevchandan</strong></span>
+        <span className="site-footer-credit">
+          Made by{" "}
+          <a
+            href="https://www.instagram.com/webdevchandan/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            @webdevchandan
+          </a>
+        </span>
         <span>Drive your journey</span>
       </div>
     </footer>

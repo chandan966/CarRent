@@ -583,7 +583,11 @@ export async function handleAdminRequest(request, response) {
         b.amount, b.payment_status AS paymentStatus, b.status AS bookingStatus, b.created_at AS createdAt,
         u.full_name AS customerName, u.email FROM carrent_bookings b JOIN carrent_users u ON u.id = b.user_id
         ORDER BY b.created_at DESC`;
-      return json(response, 200, { payments, providerConfigured: Boolean(process.env.PAYMENT_PROVIDER_SECRET) });
+      return json(response, 200, {
+        payments,
+        providerConfigured: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
+        webhookConfigured: Boolean(process.env.RAZORPAY_WEBHOOK_SECRET),
+      });
     }
     if (pathname === "/api/admin/payments") {
       response.setHeader("Allow", "GET");

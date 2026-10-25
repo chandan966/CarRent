@@ -144,6 +144,8 @@ export async function ensureSchema(sql) {
         amount integer NOT NULL,
         status varchar(20) NOT NULL DEFAULT 'Pending',
         payment_status varchar(20) NOT NULL DEFAULT 'Pending',
+        payment_order_id varchar(64) NULL,
+        payment_id varchar(64) NULL,
         created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         KEY carrent_bookings_user_idx (user_id, created_at),
         CONSTRAINT carrent_bookings_user_fk FOREIGN KEY (user_id)
@@ -155,6 +157,20 @@ export async function ensureSchema(sql) {
       `;
       if (bookingCarIdColumn && bookingCarIdColumn.dataType !== "varchar") {
         await sql`ALTER TABLE carrent_bookings MODIFY COLUMN car_id varchar(64) NOT NULL`;
+      }
+      const [paymentOrderIdColumn] = await sql`
+        SELECT COLUMN_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'carrent_bookings' AND COLUMN_NAME = 'payment_order_id'
+      `;
+      if (!paymentOrderIdColumn) {
+        await sql`ALTER TABLE carrent_bookings ADD COLUMN payment_order_id varchar(64) NULL`;
+      }
+      const [paymentIdColumn] = await sql`
+        SELECT COLUMN_NAME FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'carrent_bookings' AND COLUMN_NAME = 'payment_id'
+      `;
+      if (!paymentIdColumn) {
+        await sql`ALTER TABLE carrent_bookings ADD COLUMN payment_id varchar(64) NULL`;
       }
       await sql`CREATE TABLE IF NOT EXISTS carrent_auth_limits (
         fingerprint char(64) PRIMARY KEY,

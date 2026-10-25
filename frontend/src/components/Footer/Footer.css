@@ -81,7 +81,14 @@
 
 .site-footer-bottom > :last-child { text-align: right; }
 .site-footer-credit { text-align: center; }
-.site-footer-credit strong { color: #fff; font-weight: 700; }
+.site-footer-credit a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.site-footer-credit a:hover { color: #a9bec8; }
 
 @media (max-width: 600px) {
   .site-footer-main,

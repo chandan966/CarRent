@@ -74,6 +74,16 @@
   color: #334155;
 }
 
+.admin-payment-unavailable.configured {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.admin-payment-unavailable.configured > span {
+  background: #dcfce7;
+  color: #15803d;
+}
+
 .admin-payment-unavailable > span {
   display: grid;
   width: 42px;

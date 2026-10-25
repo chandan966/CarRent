@@ -109,7 +109,7 @@ function BookingForm({ car, type, startDate: initialStartDate = "", days: initia
           <span>{type === "rent" ? "03" : "02"}</span>
           <div>
             <h2>Submit request</h2>
-            <p>This creates a request. No payment is taken on this demo site.</p>
+            <p>{type === "buy" ? "This creates a request. You can pay the full purchase amount from Purchase History." : "This creates a request. No payment is taken at this step."}</p>
           </div>
         </div>
         <label className="agreement">

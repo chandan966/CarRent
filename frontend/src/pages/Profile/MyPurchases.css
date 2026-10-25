@@ -527,6 +527,31 @@
   background: #0369a1;
 }
 
+.purchase-pay-button {
+  background: #059669;
+  color: #ffffff;
+}
+
+.purchase-pay-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #047857;
+}
+
+.purchase-pay-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.purchase-payment-error {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
 /* EMPTY SEARCH RESULTS */
 
 .purchases-empty {

@@ -16,10 +16,13 @@ import {
   IndianRupee,
   ChevronRight,
   Search,
+  FileDown,
 } from "lucide-react";
 
 import Navbar from "../../components/Navbar/Navbar";
 import { useAuth } from "../../context/useAuth";
+import { createPaymentOrder, verifyPayment } from "../../Services/paymentServices";
+import { loadRazorpayCheckout } from "../../Services/razorpayCheckout";
 
 import "./MyPurchases.css";
 
@@ -31,6 +34,73 @@ function formatCurrency(amount) {
   }).format(amount || 0);
 }
 
+async function downloadPurchaseInvoice(invoice, user) {
+  const { jsPDF } = await import("jspdf");
+  const pdf = new jsPDF({ unit: "mm", format: "a4" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const margin = 20;
+
+  pdf.setFillColor(16, 42, 54);
+  pdf.rect(0, 0, pageWidth, 42, "F");
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  pdf.text("CARRENT", margin, 18);
+  pdf.setFontSize(21);
+  pdf.text("Purchase invoice", margin, 31);
+
+  pdf.setTextColor(51, 65, 85);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(10);
+  pdf.text(`Invoice number: INV-${invoice.id}`, margin, 56);
+  pdf.text(`Purchase date: ${invoice.date}`, margin, 64);
+  pdf.text(`Payment status: ${invoice.payment}`, pageWidth - margin, 56, { align: "right" });
+
+  pdf.setDrawColor(226, 232, 240);
+  pdf.line(margin, 74, pageWidth - margin, 74);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("BILLED TO", margin, 86);
+  pdf.text("VEHICLE", pageWidth / 2 + 5, 86);
+  pdf.setFont("helvetica", "normal");
+  let billedToY = 94;
+  for (const value of [user?.fullName || "CarRent customer", user?.email, user?.phone]) {
+    if (!value) continue;
+    const lines = pdf.splitTextToSize(value, 75);
+    pdf.text(lines, margin, billedToY);
+    billedToY += lines.length * 5;
+  }
+  let vehicleY = 94;
+  for (const value of [invoice.name, invoice.location]) {
+    const lines = pdf.splitTextToSize(value, 75);
+    pdf.text(lines, pageWidth / 2 + 5, vehicleY);
+    vehicleY += lines.length * 5;
+  }
+
+  pdf.setFillColor(241, 245, 249);
+  pdf.rect(margin, 124, pageWidth - margin * 2, 18, "F");
+  pdf.setFont("helvetica", "bold");
+  pdf.text("DESCRIPTION", margin + 5, 135);
+  pdf.text("AMOUNT", pageWidth - margin - 5, 135, { align: "right" });
+  pdf.setFont("helvetica", "normal");
+  pdf.text(pdf.splitTextToSize(`${invoice.name} - Vehicle purchase`, 105), margin + 5, 153);
+  pdf.text(invoice.price.replace(/[₹,]/g, "").trim() + " INR", pageWidth - margin - 5, 153, { align: "right" });
+  pdf.setDrawColor(226, 232, 240);
+  pdf.line(margin, 163, pageWidth - margin, 163);
+  pdf.setFont("helvetica", "bold");
+  pdf.text(invoice.payment.toLowerCase() === "paid" ? "AMOUNT PAID" : "AMOUNT DUE", pageWidth - 80, 177);
+  pdf.setFontSize(14);
+  pdf.text(invoice.price.replace(/[₹,]/g, "").trim() + " INR", pageWidth - margin - 5, 177, { align: "right" });
+
+  if (invoice.payment.toLowerCase() !== "paid") {
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.setTextColor(100, 116, 139);
+    pdf.text("This is a purchase summary, not a payment receipt.", margin, 195);
+  }
+
+  pdf.save(`CarRent-Invoice-${String(invoice.id).replace(/[^a-zA-Z0-9-]/g, "")}.pdf`);
+}
+
 function MyPurchases() {
   const { bookings, isLoading, error } = useBookings();
   const purchases = getPurchaseHistory(bookings);
@@ -40,6 +110,11 @@ function MyPurchases() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [payingPurchaseId, setPayingPurchaseId] = useState("");
+  const [paidPurchaseIds, setPaidPurchaseIds] = useState(() => new Set());
+  const [paymentError, setPaymentError] = useState("");
+  const [invoiceDownloadError, setInvoiceDownloadError] = useState("");
+  const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
 
   const filters = ["All", "Completed", "Processing"];
   const totalPurchaseValue = purchases.reduce((total, purchase) => total + purchase.amount, 0);
@@ -54,6 +129,62 @@ function MyPurchases() {
 
     return matchesSearch && matchesFilter;
   });
+
+  const handlePayNow = async (purchase) => {
+    setPaymentError("");
+    setPayingPurchaseId(purchase.id);
+    try {
+      await loadRazorpayCheckout();
+      const order = await createPaymentOrder(purchase.id);
+      const checkout = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "CarRent",
+        description: purchase.name,
+        order_id: order.orderId,
+        prefill: {
+          name: user?.fullName || "",
+          email: user?.email || "",
+          contact: user?.phone || "",
+        },
+        theme: { color: "#0284c7" },
+        handler: async (paymentResponse) => {
+          try {
+            await verifyPayment(purchase.id, paymentResponse);
+            setPaidPurchaseIds((current) => new Set(current).add(purchase.id));
+          } catch {
+            setPaymentError("Payment was submitted, but confirmation could not be verified. Do not pay again; refresh the page or contact support.");
+          } finally {
+            setPayingPurchaseId("");
+          }
+        },
+        modal: {
+          ondismiss: () => setPayingPurchaseId(""),
+        },
+      });
+      checkout.on("payment.failed", (event) => {
+        setPaymentError(event.error?.description || "Payment failed. Please try again.");
+        setPayingPurchaseId("");
+      });
+      checkout.open();
+    } catch (error) {
+      setPaymentError(error.message || "Could not start payment. Please try again.");
+      setPayingPurchaseId("");
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    setInvoiceDownloadError("");
+    setIsDownloadingInvoice(true);
+    try {
+      await downloadPurchaseInvoice(selectedInvoice, user);
+    } catch {
+      setInvoiceDownloadError("The invoice PDF could not be generated. Please try again.");
+    } finally {
+      setIsDownloadingInvoice(false);
+    }
+  };
 
   return (
     <>
@@ -183,8 +314,14 @@ function MyPurchases() {
             ) : error ? (
               <div className="purchases-empty" role="alert">{error}</div>
             ) : filteredPurchases.length > 0 ? (
+              <>
+              {paymentError && <p className="purchase-payment-error" role="alert">{paymentError}</p>}
               <div className="purchase-cards">
-                {filteredPurchases.map((purchase) => (
+                {filteredPurchases.map((purchase) => {
+                  const payment = paidPurchaseIds.has(purchase.id) ? "Paid" : purchase.payment;
+                  const isPaid = payment.toLowerCase() === "paid";
+                  const canPay = ["Pending", "Confirmed"].includes(purchase.bookingStatus);
+                  return (
                   <article className="purchase-card" key={purchase.id}>
                     <div className="purchase-image">
                       {purchase.image ? (
@@ -236,9 +373,9 @@ function MyPurchases() {
 
                         <div>
                           <span>Payment</span>
-                          <strong className={purchase.payment === "Paid" ? "payment-paid" : "payment-pending"}>
-                            <CheckCircle2 size={14} />
-                            {purchase.payment}
+                          <strong className={isPaid ? "payment-paid" : "payment-pending"}>
+                            {isPaid ? <CheckCircle2 size={14} /> : <Clock3 size={14} />}
+                            {payment}
                           </strong>
                         </div>
 
@@ -254,7 +391,10 @@ function MyPurchases() {
                         <button
                           className="purchase-document-button"
                           type="button"
-                          onClick={() => setSelectedInvoice(purchase)}
+                          onClick={() => setSelectedInvoice({
+                            ...purchase,
+                            payment: paidPurchaseIds.has(purchase.id) ? "Paid" : purchase.payment,
+                          })}
                           title="View purchase invoice"
                         >
                           <FileText size={17} />
@@ -262,17 +402,28 @@ function MyPurchases() {
                         </button>
 
                         <button
-                          className="purchase-details-button"
-                          onClick={() => navigate(`/buy/${purchase.carId}`)}
+                          className="purchase-pay-button"
+                          type="button"
+                          onClick={() => handlePayNow(purchase)}
+                          disabled={isPaid || !canPay || payingPurchaseId === purchase.id}
+                          title={!isPaid && !canPay ? "Payment is unavailable for this purchase request." : undefined}
                         >
-                          View Car
-                          <ChevronRight size={17} />
+                          <IndianRupee size={16} />
+                          {isPaid
+                            ? "Paid"
+                            : payingPurchaseId === purchase.id
+                              ? "Opening checkout…"
+                              : canPay
+                                ? "Pay Now"
+                                : "Unavailable"}
                         </button>
                       </div>
                     </div>
                   </article>
-                ))}
+                  );
+                })}
               </div>
+              </>
             ) : (
               <div className="purchases-empty">
                 <div className="purchases-empty-icon">
@@ -315,6 +466,15 @@ function MyPurchases() {
             <div className="purchase-invoice-actions">
               <button
                 type="button"
+                onClick={handleDownloadInvoice}
+                disabled={isDownloadingInvoice}
+                aria-label="Download invoice as PDF"
+              >
+                <FileDown size={16} />
+                {isDownloadingInvoice ? "Preparing PDF…" : "Download PDF"}
+              </button>
+              <button
+                type="button"
                 onClick={() => window.print()}
                 aria-label="Print invoice"
               >
@@ -329,6 +489,7 @@ function MyPurchases() {
                 <X size={18} />
               </button>
             </div>
+            {invoiceDownloadError && <p className="purchase-invoice-note" role="alert">{invoiceDownloadError}</p>}
 
             <header className="purchase-invoice-header">
               <div>

@@ -9,6 +9,8 @@ function money(value) {
 
 function AdminPayments() {
   const [payments, setPayments] = useState([]);
+  const [providerConfigured, setProviderConfigured] = useState(false);
+  const [webhookConfigured, setWebhookConfigured] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const load = useCallback(async () => {
@@ -17,6 +19,8 @@ function AdminPayments() {
     try {
       const result = await getAdminPayments();
       setPayments(result.payments || []);
+      setProviderConfigured(Boolean(result.providerConfigured));
+      setWebhookConfigured(Boolean(result.webhookConfigured));
     } catch (requestError) { setError(requestError.message); }
     finally { setIsLoading(false); }
   }, []);
@@ -28,9 +32,22 @@ function AdminPayments() {
         <div><span className="admin-mini-label">PAYMENT STATUS</span><h1>Payments</h1><p>Review payment state attached to booking requests.</p></div>
         <button className="admin-primary-btn" type="button" onClick={load} disabled={isLoading}><RefreshCw size={16} /> Refresh</button>
       </header>
-      <section className="admin-payment-unavailable" role="note">
+      <section className={`admin-payment-unavailable ${providerConfigured && webhookConfigured ? "configured" : ""}`} role="note">
         <span><CreditCard size={24} aria-hidden="true" /></span>
-        <div><strong>Online payment processing is not configured</strong><p>These are requested prices and recorded payment statuses only. CarRent has not collected money. A provider account and verified payment webhooks are required before payments can be accepted.</p></div>
+        <div>
+          <strong>
+            {!providerConfigured
+              ? "Razorpay checkout is not configured"
+              : webhookConfigured
+                ? "Razorpay checkout and payment webhook are configured"
+                : "Razorpay checkout is configured; webhook setup is incomplete"}
+          </strong>
+          <p>
+            {providerConfigured && webhookConfigured
+              ? "Confirmed car purchases can be paid through Razorpay. Rental payments are not enabled."
+              : "Online checkout requires Razorpay API keys and a verified payment.captured webhook. Do not treat a pending payment as collected."}
+          </p>
+        </div>
       </section>
       {error && <p className="admin-payment-error" role="alert">{error}</p>}
       <section className="admin-card-table admin-payment-placeholder">

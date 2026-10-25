@@ -12,6 +12,7 @@ const [{ database }, { handleAdminRequest, handleCatalogRequest, handleFavorites
   import("./src/api/auth.js"),
   import("./src/api/marketplace.js"),
 ]);
+const { handlePaymentsRequest } = await import("./src/api/payments.js");
 
 function sendJson(response, status, payload) {
   response.statusCode = status;
@@ -59,6 +60,9 @@ const server = createServer(async (request, response) => {
     }
     if (pathname === "/api/bookings") {
       return await handleBookingsRequest(request, response);
+    }
+    if (pathname.startsWith("/api/payments/")) {
+      return await handlePaymentsRequest(request, response, pathname);
     }
     if (pathname === "/api/cars" || pathname.startsWith("/api/cars/")) {
       return await handleCatalogRequest(request, response);

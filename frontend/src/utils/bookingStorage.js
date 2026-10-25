@@ -38,6 +38,7 @@ export function getPurchaseHistory(bookings = []) {
       location: booking.pickupLocation || "Location to be confirmed",
       date: formatDate(booking.createdAt),
       status: String(booking.status || "Pending").toLowerCase() === "completed" ? "Completed" : "Processing",
+      bookingStatus: booking.status || "Pending",
       payment: booking.paymentStatus || "Pending",
     }));
 }
@@ -58,6 +59,7 @@ export function getRentalHistory(bookings = []) {
         duration: Number(booking.days) > 0 ? `${booking.days} day${Number(booking.days) === 1 ? "" : "s"}` : "Not provided",
         price: formatCurrency(booking.amount),
         amount: Number(booking.amount) || 0,
+        bookingStatus: booking.status || "Pending",
         status: status === "completed" ? "Completed" : ["confirmed", "upcoming"].includes(status) ? "Upcoming" : "Pending",
         payment: booking.paymentStatus || "Pending",
       };
