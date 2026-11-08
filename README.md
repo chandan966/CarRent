@@ -124,6 +124,16 @@ DATABASE_SSL — set to require when using the project's corresponding TLS confi
 
 The backend must use the Aiven CA certificate and keep certificate verification enabled. Keep the certificate at Backend/certs/aiven-ca.pem if the backend configuration loads it from that path. Never disable certificate verification as a workaround for TLS errors.
 
+Optional Razorpay online payment variables:
+
+RAZORPAY_KEY_ID
+
+RAZORPAY_KEY_SECRET
+
+RAZORPAY_WEBHOOK_SECRET
+
+Configure these in the backend host's private environment settings to enable checkout. The API key secret and webhook secret must never be exposed in frontend code or committed files. Without valid Razorpay keys, Pay Now displays that online payments are temporarily unavailable.
+
 Optional Google sign-in variables:
 
 GOOGLE_CLIENT_ID
@@ -161,7 +171,9 @@ Keep guest favorites in the current browser and synchronize signed-in favorites 
 
 Submit server-validated purchase and rental requests.
 
-View bookings, purchases, rentals, and profile information.
+View bookings, purchases, rentals, and profile information. Purchase History and Rental History show Pay Now for eligible unpaid bookings; checkout uses the amount saved by the server. Purchase History also supports viewing and downloading purchase invoices.
+
+Accept full-price payments for pending or confirmed purchase and rental bookings through Razorpay when payment credentials are configured. The backend verifies payment signatures and captured amounts before recording a booking as paid. A signed `payment.captured` webhook can also update payment status.
 
 Update account profile details through authenticated API requests.
 
@@ -193,6 +205,10 @@ POST /api/cars — authenticated seller listing and photo upload.
 
 GET /api/bookings and POST /api/bookings — booking requests, with server-side price/date validation and administrator list access.
 
+POST /api/payments/order and POST /api/payments/verify — authenticated Razorpay checkout order creation and payment verification for the current user's eligible purchase or rental booking.
+
+POST /api/payments/webhook — signed Razorpay `payment.captured` notifications.
+
 /api/favorites — signed-in account favorites.
 
 /api/notifications — list, mark as read, and delete the current user's in-app notifications.
@@ -217,6 +233,6 @@ Render's free web services may sleep when idle and take time to wake. Aiven's fr
 
 Known limitations
 
-CarRent is not yet a complete commercial transaction platform. No payment is collected until a payment provider, checkout flow, and signed webhook verification are configured. Email verification, password-reset delivery, durable cloud photo storage, automated backups, monitoring/alerting, and legal documents still require their respective services and operational setup. Payment management currently displays booking amounts and payment statuses; it does not itself collect money.
+CarRent's Razorpay checkout implementation supports full-amount payments for pending or confirmed purchase and rental bookings. Actual online payments require valid Razorpay API keys and a configured signed webhook; without those settings, checkout is unavailable. Purchase invoices are available in Purchase History; rental receipts are not yet implemented. Refunds, payouts, email verification, password-reset delivery, durable cloud photo storage, automated backups, monitoring/alerting, and legal documents still require their respective services and operational setup. The admin payment view displays booking amounts and payment statuses; it does not collect money.
 
 Run npm run build and npm run lint before a release. A successful frontend build does not prove that OAuth, API routing, MySQL access, uploads, or every production feature is working; test the deployed flows after each deployment.

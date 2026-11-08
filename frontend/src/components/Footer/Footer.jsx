@@ -35,7 +35,7 @@ function Footer() {
         <span className="site-footer-credit">
           Made by{" "}
           <a
-            href="https://www.instagram.com/webdevchandan/"
+            href="https://www.instagram.com/trigger_toofan?vrfl=N3JjMTFrZjVwempj"
             target="_blank"
             rel="noreferrer"
           >
